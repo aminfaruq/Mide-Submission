@@ -1,5 +1,5 @@
 //
-//  LocalRestaurantDetailStoreTests.swift
+//  LocalRestaurantDetailLoaderTests.swift
 //  RestaurantCoreTests
 //
 //  Created by Amin faruq on 31/10/26.
@@ -9,7 +9,7 @@ import XCTest
 import RxSwift
 import RestaurantCore
 
-final class LocalRestaurantDetailStoreTests: XCTestCase {
+final class LocalRestaurantDetailLoaderTests: XCTestCase {
     
     private let disposeBag = DisposeBag()
     
@@ -87,9 +87,9 @@ final class LocalRestaurantDetailStoreTests: XCTestCase {
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: LocalRestaurantDetailStore, spy: FavoriteStoreSpy) {
+    ) -> (sut: LocalRestaurantDetailLoader, spy: FavoriteStoreSpy) {
         let spy = FavoriteStoreSpy()
-        let sut = LocalRestaurantDetailStore(store: spy)
+        let sut = LocalRestaurantDetailLoader(store: spy)
         
         trackForMemoryLeaks(spy, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)

@@ -9,33 +9,6 @@ import XCTest
 import RxSwift
 import RestaurantCore
 
-public protocol FavoriteManager {
-    func save(_ restaurant: RestaurantEntity) -> Completable
-    func remove(id: String)  -> Completable
-    func isFavorite(id: String)  -> Single<Bool>
-}
-
-final class LocalRestaurantDetailStore: FavoriteManager {
-
-    private let store: FavoriteStore
-    
-    init(store: FavoriteStore) {
-        self.store = store
-    }
-    
-    func save(_ restaurant: RestaurantEntity) -> Completable {
-        return store.save(restaurant)
-    }
-    
-    func remove(id: String) -> Completable {
-        return store.delete(id: id)
-    }
-    
-    func isFavorite(id: String) -> Single<Bool> {
-        return store.isFavorite(id: id)
-    }
-}
-
 final class LocalRestaurantDetailStoreTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

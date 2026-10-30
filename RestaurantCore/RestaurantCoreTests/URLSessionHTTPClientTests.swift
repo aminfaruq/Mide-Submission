@@ -25,6 +25,7 @@ final class URLSessionHTTPClient {
                     return
                 }
                 
+                single(.failure(UnexpectedValuesRepresentation()))
             }
             
             
@@ -35,6 +36,8 @@ final class URLSessionHTTPClient {
             }
         }
     }
+    
+    struct UnexpectedValuesRepresentation: Error {}
 }
 
 final class URLSessionHTTPClientTests: XCTestCase {
@@ -85,6 +88,33 @@ final class URLSessionHTTPClientTests: XCTestCase {
             .disposed(by: disposeBag)
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_getFromURL_deliversErrorOnNonHTTURLResponse() {
+        let data = "any-data".data(using: .utf8)!
+        let response = URLResponse(
+            url: anyURL(),
+            mimeType: nil,
+            expectedContentLength: 0,
+            textEncodingName: nil
+        )
+
+        URLProtocolStub.stub = { _ in
+            return (data, response)
+        }
+        
+        let exp = expectation(description: "wait from response")
+        makeSUT().get(from: anyURL())
+            .subscribe(
+                onFailure: { error in
+                    XCTAssertTrue(error is URLSessionHTTPClient.UnexpectedValuesRepresentation)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+        
     }
 
     //MARK: Helpers

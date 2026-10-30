@@ -135,7 +135,9 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
     
     //MARK: - Helpers
     private func makeSUT(
-        url: URL = anyURL()
+        url: URL = anyURL(),
+        file: StaticString = #filePath,
+        line: UInt = #line
     ) -> (
         sut: RemoteRestaurantListLoader,
         spy: HTTPClientSpy
@@ -143,7 +145,20 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
         let spy = HTTPClientSpy()
         let sut = RemoteRestaurantListLoader(url: url, client: spy)
         
+        trackForMemoryLeaks(spy, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        
         return (sut, spy)
+    }
+    
+    func trackForMemoryLeaks(
+        _ instance: AnyObject,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "Should have been deallocated. Potential memory leaks", file: file, line: line)
+        }
     }
     
     private func makeResult(_ restaurants: [[String: Any]] ) -> Data {

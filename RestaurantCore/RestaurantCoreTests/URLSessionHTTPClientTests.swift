@@ -18,42 +18,26 @@ final class URLSessionHTTPClient {
     }
     
     func get(from url: URL) -> Single<HTTPClient.Result> {
-        return Single.create { [session] single in
-            let task = session.dataTask(with: url) { data, response, error in
-                if let error {
-                    single(.failure(error))
-                    return
-                }
-                
-                guard let data = data, let httpResponse = response as? HTTPURLResponse else {
-                    single(.failure(UnexpectedValuesRepresentation()))
-                    return
-                }
-                
-                single(.success((data, httpResponse)))
-            }
-            
-            task.resume()
-            
-            return Disposables.create {
-                task.cancel()
-            }
-        }
+        return execute(request: URLRequest(url: url))
     }
     
     func post(to url: URL, body: HTTPBody?) -> Single<HTTPClient.Result> {
-        return Single.create { [session] single in
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            
-            if let body {
-                request.httpBody = body.data
-                switch body.contentType {
-                    case .json:
-                        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-                }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        if let body {
+            request.httpBody = body.data
+            switch body.contentType {
+                case .json:
+                    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             }
-            
+        }
+        
+        return execute(request: request)
+    }
+    
+    private func execute(request: URLRequest) -> Single<HTTPClient.Result> {
+        return Single.create { [session] single in
             let task = session.dataTask(with: request) { data, response, error in
                 if let error {
                     single(.failure(error))
@@ -109,7 +93,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromURL_deliversErrorOnFailure() {
         let expectedError = anyError()
         let exp = expectation(description: "wait from response")
-
+        
         URLProtocolStub.stub = { _ in
             throw expectedError
         }
@@ -136,7 +120,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
             expectedContentLength: 0,
             textEncodingName: nil
         )
-
+        
         URLProtocolStub.stub = { _ in
             return (data, response)
         }
@@ -201,7 +185,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     func test_postToURL_deliversErrorOnFailure() {
         let expectedError = anyError()
         let exp = expectation(description: "wait from response")
-
+        
         URLProtocolStub.stub = { _ in
             throw expectedError
         }
@@ -228,7 +212,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
             expectedContentLength: 0,
             textEncodingName: nil
         )
-
+        
         URLProtocolStub.stub = { _ in
             return (data, response)
         }
@@ -267,7 +251,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
-
+    
     //MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,

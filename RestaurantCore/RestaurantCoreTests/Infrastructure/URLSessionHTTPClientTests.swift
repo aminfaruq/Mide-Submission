@@ -241,6 +241,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
 }
 
+// Source - https://stackoverflow.com/a/56055897
+// Posted by bauerMusic, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-10-31, License - CC BY-SA 4.0
 private extension URLRequest {
     var httpBodyData: Data? {
         if let httpBody = httpBody { return httpBody }

@@ -53,6 +53,26 @@ final class RemoteRestaurantDetailLoader {
             }
     }
     
+    func addReview(review: AddReviewBody) -> Completable {
+        let requestedURL = url
+            .appending(path: "review")
+        let body = makeBody(from: review)
+        return client.post(to: requestedURL, body: body)
+            .catch({ _ in
+                return .error(NetworkError.connectivity)
+            })
+            .flatMapCompletable { _, response in
+                switch response.statusCode {
+                    case 201:
+                        return .empty()
+                    default:
+                        return .error(NetworkError.invalidData)
+                }
+            }
+    }
+}
+
+extension RemoteRestaurantDetailLoader {
     private struct RootDTO: Decodable {
         let restaurant: RemoteRestaurantDTO
     }
@@ -104,6 +124,23 @@ final class RemoteRestaurantDetailLoader {
         }
     }
     
+    private func makeBody(from review: AddReviewBody) -> HTTPBody {
+        let requestDTO = AddReviewRequestDTO(id: review.id, name: review.name, review: review.review)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        
+        guard let data = try? encoder.encode(requestDTO) else {
+            fatalError(NetworkError.invalidData.localizedDescription)
+        }
+        
+        return HTTPBody(data: data, contentType: .json)
+    }
+    
+    private struct AddReviewRequestDTO: Encodable {
+        let id: String
+        let name: String
+        let review: String
+    }
 }
 
 final class RemoteRestaurantDetailLoaderTests: XCTestCase {
@@ -212,6 +249,80 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_addReview_requestedFromURL() {
+        let url = anyURL()
+        let (sut, spy) = makeSUT(url: url)
+        
+        let expectedURL = URL(string: url.absoluteString + "/review")!
+        
+        let review = makeReview()
+        let body = makeBody(id: review.id, name: review.name, review: review.review)
+        
+        sut.addReview(review: review)
+            .subscribe()
+            .disposed(by: disposeBag)
+        
+        XCTAssertEqual(spy.messages, [.post(expectedURL, body: body)])
+    }
+    
+    
+    func test_addReview_deliversErrorConnectivity() {
+        let (sut, spy) = makeSUT()
+        spy.stub = .error(anyError())
+        
+        let exp = expectation(description: "wait from response")
+        
+        sut.addReview(review: makeReview())
+            .subscribe(
+                onError: { error in
+                    let receivedError = error as? NetworkError
+                    XCTAssertEqual(receivedError, .connectivity)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_addReview_deliversInvalidDataOnNon201() {
+        let samples = [199, 200, 300, 400, 404, 500]
+        
+        samples.forEach { code in
+            let (sut, spy) = makeSUT()
+            spy.stub = .just(makeResponse(statusCode: code))
+            
+            let exp = expectation(description: "wait from response")
+            sut.addReview(review: makeReview())
+                .subscribe(
+                    onError: { error in
+                        let receivedError = error as? NetworkError
+                        XCTAssertEqual(receivedError, .invalidData)
+                        exp.fulfill()
+                    }
+                )
+                .disposed(by: disposeBag)
+            
+            wait(for: [exp], timeout: 1.0)
+        }
+    }
+    
+    func test_addReview_deliversCompletedOn201StatusCode() {
+        let (sut, spy) = makeSUT()
+        spy.stub = .just(makeResponse(statusCode: 201))
+        
+        let exp = expectation(description: "wait from response")
+        sut.addReview(review: makeReview())
+            .subscribe(
+                onCompleted: {
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
     //MARK: - Helpers
     private func makeSUT(

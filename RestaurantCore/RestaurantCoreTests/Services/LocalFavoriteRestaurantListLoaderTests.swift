@@ -9,38 +9,6 @@ import XCTest
 import RxSwift
 import RestaurantCore
 
-public protocol FavoriteStore {
-    func retrieve() -> Single<[RestaurantEntity]>
-    func save(_ restaurant: RestaurantEntity) -> Completable
-    func delete(id: String) -> Completable
-    func isFavorite(id: String) -> Single<Bool>
-}
-
-final class LocalFavoriteRestaurantListLoader: RestaurantListLoader {
-    
-    private let store: FavoriteStore
-    
-    init(store: FavoriteStore) {
-        self.store = store
-    }
-    
-    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
-        return store.retrieve()
-            .map { restaurants in
-                let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                if trimmedQuery.isEmpty {
-                    return restaurants
-                } else {
-                    return restaurants.filter { restaurant in
-                        restaurant.name.localizedCaseInsensitiveContains(trimmedQuery) 
-                    }
-                }
-            }
-    }
-    
-}
-
 final class LocalFavoriteRestaurantListLoaderTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

@@ -41,6 +41,40 @@ final class URLSessionHTTPClient {
         }
     }
     
+    func post(to url: URL, body: HTTPBody?) -> Single<HTTPClient.Result> {
+        return Single.create { [session] single in
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            
+            if let body {
+                request.httpBody = body.data
+                switch body.contentType {
+                    case .json:
+                        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                }
+            }
+            
+            let task = session.dataTask(with: request) { data, response, error in
+                if let error {
+                    single(.failure(error))
+                    return
+                }
+                
+                guard let data = data, let httpResponse = response as? HTTPURLResponse else {
+                    single(.failure(UnexpectedValuesRepresentation()))
+                    return
+                }
+                
+                single(.success((data, httpResponse)))
+            }
+            task.resume()
+            
+            return Disposables.create {
+                task.cancel()
+            }
+        }
+    }
+    
     struct UnexpectedValuesRepresentation: Error {}
 }
 
@@ -141,6 +175,98 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
+    
+    func test_postToURL_requestFromURL() {
+        let url = anyURL()
+        let exp = expectation(description: "wait from response")
+        let jsonBody = "{\"title\": \"ABC\"}".data(using: .utf8)!
+        let body = HTTPBody(data: jsonBody, contentType: .json)
+        
+        URLProtocolStub.stub = { request in
+            XCTAssertEqual(request.url, url)
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.httpBodyData, jsonBody)
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
+            exp.fulfill()
+            return makeResponse(statusCode: 200)
+        }
+        
+        makeSUT().post(to: url, body: body)
+            .subscribe()
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_postToURL_deliversErrorOnFailure() {
+        let expectedError = anyError()
+        let exp = expectation(description: "wait from response")
+
+        URLProtocolStub.stub = { _ in
+            throw expectedError
+        }
+        
+        makeSUT().post(to: anyURL(), body: nil)
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as NSError
+                    XCTAssertEqual(receivedError.code, expectedError.code)
+                    XCTAssertEqual(receivedError.domain, expectedError.domain)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_postToURL_deliversErrorOnNonHTTURLResponse() {
+        let data = "any-data".data(using: .utf8)!
+        let response = URLResponse(
+            url: anyURL(),
+            mimeType: nil,
+            expectedContentLength: 0,
+            textEncodingName: nil
+        )
+
+        URLProtocolStub.stub = { _ in
+            return (data, response)
+        }
+        
+        let exp = expectation(description: "wait from response")
+        makeSUT().post(to: anyURL(), body: nil)
+            .subscribe(
+                onFailure: { error in
+                    XCTAssertTrue(error is URLSessionHTTPClient.UnexpectedValuesRepresentation)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_postToURL_deliversResultFromURL() {
+        let (data, response) = makeResponse(statusCode: 200, data: "any-data".data(using: .utf8)!)
+        
+        URLProtocolStub.stub = { _ in
+            return (data, response)
+        }
+        
+        let exp = expectation(description: "wait from response")
+        makeSUT().post(to: anyURL(), body: nil)
+            .subscribe(
+                onSuccess: { receivedData, receivedResponse in
+                    XCTAssertEqual(receivedData, data)
+                    XCTAssertEqual(receivedResponse.url, response.url)
+                    XCTAssertEqual(receivedResponse.statusCode, response.statusCode)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
 
     //MARK: Helpers
     private func makeSUT(
@@ -181,5 +307,27 @@ final class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override func stopLoading() {}
+    }
+}
+
+private extension URLRequest {
+    var httpBodyData: Data? {
+        if let httpBody = httpBody { return httpBody }
+        guard let stream = httpBodyStream else { return nil }
+        stream.open()
+        defer { stream.close() }
+        var data = Data()
+        let bufferSize = 1024
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        defer { buffer.deallocate() }
+        while stream.hasBytesAvailable {
+            let read = stream.read(buffer, maxLength: bufferSize)
+            if read > 0 {
+                data.append(buffer, count: read)
+            } else {
+                break
+            }
+        }
+        return data
     }
 }

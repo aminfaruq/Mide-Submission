@@ -24,7 +24,7 @@ final class LocalRestaurantDetailStore: FavoriteManager {
     }
     
     func save(_ restaurant: RestaurantEntity) -> Completable {
-        .never()
+        return store.save(restaurant)
     }
     
     func remove(id: String) -> Completable {
@@ -38,10 +38,33 @@ final class LocalRestaurantDetailStore: FavoriteManager {
 
 final class LocalRestaurantDetailStoreTests: XCTestCase {
     
+    private let disposeBag = DisposeBag()
+    
     func test_init_doesNotMessagesUponCreation() {
         let (_, spy) = makeSUT()
         
         XCTAssertEqual(spy.messages, [])
+    }
+    
+    func test_save_requestSaveFromStore() {
+        let (sut, spy) = makeSUT()
+        
+        spy.saveStub = .empty()
+        let exp = expectation(description: "wait from response")
+        let insertion = makeRestaurant(name: "melting")
+        
+        sut.save(insertion)
+            .subscribe(
+                onCompleted: {
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(spy.messages, [.save(insertion)])
     }
 
     //MARK: Helpers
@@ -56,6 +79,17 @@ final class LocalRestaurantDetailStoreTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         
         return (sut, spy)
+    }
+    
+    private func makeRestaurant(name: String) -> RestaurantEntity {
+        .init(
+            id: UUID().uuidString,
+            name: name,
+            description: "a desc",
+            pictureId: "an id",
+            city:  "any-city",
+            rating: 4.5
+        )
     }
 
 }

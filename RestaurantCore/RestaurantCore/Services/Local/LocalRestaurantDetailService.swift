@@ -1,5 +1,5 @@
 //
-//  LocalRestaurantDetailLoader.swift
+//  LocalRestaurantDetailService.swift
 //  RestaurantCore
 //
 //  Created by Amin faruq on 31/10/26.
@@ -7,13 +7,13 @@
 
 import RxSwift
 
-public protocol FavoriteLoader {
+public protocol FavoriteService {
     func save(_ restaurant: RestaurantEntity) -> Completable
     func remove(id: String)  -> Completable
     func isFavorite(id: String)  -> Single<Bool>
 }
 
-public final class LocalRestaurantDetailLoader: FavoriteLoader {
+public final class LocalRestaurantDetailService: FavoriteService {
 
     private let store: FavoriteStore
     

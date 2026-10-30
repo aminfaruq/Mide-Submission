@@ -28,7 +28,7 @@ final class LocalRestaurantDetailStore: FavoriteManager {
     }
     
     func remove(id: String) -> Completable {
-        .never()
+        return store.delete(id: id)
     }
     
     func isFavorite(id: String) -> Single<Bool> {
@@ -65,6 +65,27 @@ final class LocalRestaurantDetailStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(spy.messages, [.save(insertion)])
+    }
+    
+    func test_remove_requestDeleteFromStore() {
+        let (sut, spy) = makeSUT()
+        
+        spy.deleteStub = .empty()
+        let exp = expectation(description: "wait from response")
+        let anyId = UUID().uuidString
+        
+        sut.remove(id: anyId)
+            .subscribe(
+                onCompleted: {
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(spy.messages, [.delete(id: anyId)])
     }
 
     //MARK: Helpers

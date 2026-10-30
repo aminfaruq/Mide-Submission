@@ -8,7 +8,7 @@
 import Foundation
 import RxSwift
 
-public final class URLSessionHTTPClient {
+public final class URLSessionHTTPClient: HTTPClient {
     
     private let session: URLSession
     

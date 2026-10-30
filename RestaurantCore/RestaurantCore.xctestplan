@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "CAAEA9F1-95D5-4230-B30B-93517BC0C005",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:RestaurantCore.xcodeproj",
+        "identifier" : "83C2DCEA3094AFFA008D3591",
+        "name" : "RestaurantCoreTests"
+      }
+    }
+  ],
+  "version" : 1
+}

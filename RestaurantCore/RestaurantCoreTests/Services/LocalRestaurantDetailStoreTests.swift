@@ -32,7 +32,7 @@ final class LocalRestaurantDetailStore: FavoriteManager {
     }
     
     func isFavorite(id: String) -> Single<Bool> {
-        .never()
+        return store.isFavorite(id: id)
     }
 }
 
@@ -86,6 +86,28 @@ final class LocalRestaurantDetailStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(spy.messages, [.delete(id: anyId)])
+    }
+    
+    func test_isFavorite_requestFavoriteFromStore() {
+        let (sut, spy) = makeSUT()
+        
+        spy.isFavoriteStub = .just(true)
+        let exp = expectation(description: "wait from response")
+        let anyId = UUID().uuidString
+        
+        sut.isFavorite(id: anyId)
+            .subscribe(
+                onSuccess: { result in
+                    XCTAssertTrue(result)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(spy.messages, [.isFavorite(id: anyId)])
     }
 
     //MARK: Helpers

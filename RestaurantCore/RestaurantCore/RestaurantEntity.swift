@@ -12,4 +12,13 @@ public struct RestaurantEntity: Equatable {
     public let pictureId: String
     public let city: String
     public let rating: Double
+    
+    public init(id: String, name: String, description: String, pictureId: String, city: String, rating: Double) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.pictureId = pictureId
+        self.city = city
+        self.rating = rating
+    }
 }

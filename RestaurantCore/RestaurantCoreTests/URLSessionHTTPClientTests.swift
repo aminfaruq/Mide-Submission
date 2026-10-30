@@ -11,12 +11,53 @@ import XCTest
 
 final class URLSessionHTTPClient {
     
+    private let session: URLSession
+    
     init(session: URLSession = .shared) {
-        
+        self.session = session
+    }
+    
+    func get(from url: URL) -> Single<HTTPClient.Result> {
+        return Single.create { [session] single in
+            let task = session.dataTask(with: url)
+            
+            
+            task.resume()
+            
+            return Disposables.create {
+                task.cancel()
+            }
+        }
     }
 }
 
 final class URLSessionHTTPClientTests: XCTestCase {
+    
+    private let disposeBag = DisposeBag()
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        URLProtocolStub.stub = nil
+    }
+    
+    func test_getFromURL_requestFromURL() {
+        let url = anyURL()
+        let exp = expectation(description: "wait from response")
+        
+        URLProtocolStub.stub = { request in
+            XCTAssertEqual(request.url, url)
+            XCTAssertEqual(request.httpMethod, "GET")
+            exp.fulfill()
+            return makeResponse(statusCode: 200)
+        }
+        
+        makeSUT().get(from: url)
+            .subscribe()
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
 
     //MARK: Helpers
     private func makeSUT(

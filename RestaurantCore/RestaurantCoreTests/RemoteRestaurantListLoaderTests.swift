@@ -34,8 +34,7 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
     
     func test_loadRestaurants_deliversErrorConnectivity() {
         let (sut, spy) = makeSUT()
-        let anyError = NSError(domain: "an-error", code: -99999)
-        spy.stub = .error(anyError)
+        spy.stub = .error(anyError())
         
         let exp = expectation(description: "wait from response")
         

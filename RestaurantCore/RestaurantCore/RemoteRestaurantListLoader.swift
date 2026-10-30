@@ -9,14 +9,14 @@ import Foundation
 import RxSwift
 
 public struct HTTPBody: Equatable {
-    enum ContentType: Equatable {
+    public enum ContentType: Equatable {
         case json
     }
     
-    private let data: Data
-    private let contentType: ContentType
+    public let data: Data
+    public let contentType: ContentType
     
-    init(data: Data, contentType: ContentType) {
+    public init(data: Data, contentType: ContentType) {
         self.data = data
         self.contentType = contentType
     }

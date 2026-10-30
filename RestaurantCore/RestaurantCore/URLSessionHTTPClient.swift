@@ -8,6 +8,27 @@
 import Foundation
 import RxSwift
 
+public struct HTTPBody: Equatable {
+    public enum ContentType: Equatable {
+        case json
+    }
+    
+    public let data: Data
+    public let contentType: ContentType
+    
+    public init(data: Data, contentType: ContentType) {
+        self.data = data
+        self.contentType = contentType
+    }
+}
+
+public protocol HTTPClient {
+    typealias Result = (Data, HTTPURLResponse)
+    
+    func get(from url: URL) -> Single<Result>
+    func post(to url: URL, body: HTTPBody?) -> Single<Result>
+}
+
 public final class URLSessionHTTPClient: HTTPClient {
     
     private let session: URLSession

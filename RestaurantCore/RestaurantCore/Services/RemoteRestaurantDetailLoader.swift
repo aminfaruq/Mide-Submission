@@ -20,7 +20,12 @@ public struct AddReviewBody: Hashable {
     }
 }
 
-public final class RemoteRestaurantDetailLoader {
+public protocol RestaurantDetailLoader {
+    func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity>
+    func addReview(review: AddReviewBody) -> Completable
+}
+
+public final class RemoteRestaurantDetailLoader: RestaurantDetailLoader {
     private let url: URL
     private let client: HTTPClient
     
@@ -38,7 +43,6 @@ public final class RemoteRestaurantDetailLoader {
                 return .error(NetworkError.connectivity)
             })
             .flatMap { data, response in
-                
                 switch response.statusCode {
                     case 200:
                         guard let root = try? JSONDecoder().decode(RootDTO.self, from: data) else {

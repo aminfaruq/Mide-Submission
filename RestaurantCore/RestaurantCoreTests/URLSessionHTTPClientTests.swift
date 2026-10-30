@@ -9,59 +9,6 @@ import RestaurantCore
 import RxSwift
 import XCTest
 
-final class URLSessionHTTPClient {
-    
-    private let session: URLSession
-    
-    init(session: URLSession = .shared) {
-        self.session = session
-    }
-    
-    func get(from url: URL) -> Single<HTTPClient.Result> {
-        return execute(request: URLRequest(url: url))
-    }
-    
-    func post(to url: URL, body: HTTPBody?) -> Single<HTTPClient.Result> {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        
-        if let body {
-            request.httpBody = body.data
-            switch body.contentType {
-                case .json:
-                    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
-        }
-        
-        return execute(request: request)
-    }
-    
-    private func execute(request: URLRequest) -> Single<HTTPClient.Result> {
-        return Single.create { [session] single in
-            let task = session.dataTask(with: request) { data, response, error in
-                if let error {
-                    single(.failure(error))
-                    return
-                }
-                
-                guard let data = data, let httpResponse = response as? HTTPURLResponse else {
-                    single(.failure(UnexpectedValuesRepresentation()))
-                    return
-                }
-                
-                single(.success((data, httpResponse)))
-            }
-            task.resume()
-            
-            return Disposables.create {
-                task.cancel()
-            }
-        }
-    }
-    
-    struct UnexpectedValuesRepresentation: Error {}
-}
-
 final class URLSessionHTTPClientTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

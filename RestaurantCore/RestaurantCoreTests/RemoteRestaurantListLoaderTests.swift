@@ -5,6 +5,7 @@
 //  Created by Amin faruq on 30/10/26.
 //
 
+import RestaurantCore
 import XCTest
 import RxSwift
 
@@ -29,10 +30,68 @@ public protocol HTTPClient {
     func post(to url: URL, body: HTTPBody?) -> Single<Result>
 }
 
+public enum NetworkError: Swift.Error, LocalizedError, Equatable {
+    case connectivity
+    case invalidData
+    case decodeError
+}
+
 final class RemoteRestaurantListLoader {
     
+    private let url: URL
+    private let client: HTTPClient
+    
     init(url: URL, client: HTTPClient) {
+        self.url = url
+        self.client = client
+    }
+    
+    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
+        let requestedURL = url
+            .appending(path: "search")
+            .appending(queryItems: [
+                URLQueryItem(name: "q", value: query)
+            ])
+        return client.get(from: requestedURL)
+            .catch({ _ in
+                return .error(NetworkError.connectivity)
+            })
+            .flatMap { (data, response) in
+                
+                switch response.statusCode {
+                    case 200:
+                        guard let root = try? JSONDecoder().decode(RootDTO.self, from: data) else {
+                            return .error(NetworkError.decodeError)
+                        }
+                        return .just(root.restaurants.map { $0.toModel() })
+                    default:
+                        return .error(NetworkError.invalidData)
+                }
+            }
+    }
+    
+    private struct RootDTO: Decodable {
+        let restaurants: [RemoteRestaurantDTO]
+    }
+    
+    private struct RemoteRestaurantDTO: Decodable {
+        private let id: String
+        private let name: String
+        private let description: String
+        private let pictureId: String
+        private let city: String
+        private let rating: Double
         
+        func toModel() -> RestaurantEntity {
+            .init(
+                id: id,
+                name: name,
+                description: description,
+                pictureId: pictureId,
+                city: city,
+                rating: rating
+            )
+        }
     }
 }
 
@@ -50,7 +109,114 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
         let url = anyURL()
         let (sut, spy) = makeSUT(url: url)
         
-        XCTAssertEqual(spy.requestedURL, [])
+        let expectedURL = URL(string: url.absoluteString + "/search?q=melting")
+        
+        sut.loadRestaurants(query: "melting")
+            .subscribe()
+            .disposed(by: disposeBag)
+        
+        XCTAssertEqual(spy.requestedURL, [expectedURL])
+    }
+    
+    func test_loadRestaurants_deliversErrorConnectivity() {
+        let (sut, spy) = makeSUT()
+        let anyError = NSError(domain: "an-error", code: -99999)
+        spy.stub = .error(anyError)
+        
+        let exp = expectation(description: "wait from response")
+        
+        sut.loadRestaurants()
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as? NetworkError
+                    XCTAssertEqual(receivedError, .connectivity)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_loadRestaurants_deliversInvalidDataOnNon200() {
+        let samples = [199, 300, 400, 404, 500]
+        
+        samples.forEach { code in
+            let (sut, spy) = makeSUT()
+            spy.stub = .just(makeResponse(statusCode: code))
+            
+            let exp = expectation(description: "wait from response")
+            sut.loadRestaurants()
+                .subscribe(
+                    onFailure: { error in
+                        let receivedError = error as? NetworkError
+                        XCTAssertEqual(receivedError, .invalidData)
+                        exp.fulfill()
+                    }
+                )
+                .disposed(by: disposeBag)
+            
+            wait(for: [exp], timeout: 1.0)
+        }
+    }
+    
+    func test_loadRestaurants_deliversDecodeErrorOn200StatusCode() {
+        let (sut, spy) = makeSUT()
+        let invalidJSON = "invalid-json".data(using: .utf8)!
+        
+        spy.stub = .just(makeResponse(statusCode: 200, data: invalidJSON))
+        
+        let exp = expectation(description: "wait from response")
+        sut.loadRestaurants()
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as? NetworkError
+                    XCTAssertEqual(receivedError, .decodeError)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_loadRestaurants_deliversEmptyOn200StatusCode() {
+        let (sut, spy) = makeSUT()
+        let json = makeResult([])
+        spy.stub = .just(makeResponse(statusCode: 200, data: json))
+        
+        let exp = expectation(description: "wait from response")
+        sut.loadRestaurants()
+            .subscribe(
+                onSuccess: { result in
+                    XCTAssertEqual(result, [])
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_loadRestaurants_deliversResultsOn200StatusCode() {
+        let (sut, spy) = makeSUT()
+        let restaurant = makeRestaurant()
+        let json = makeResult([restaurant.json])
+        
+        spy.stub = .just(makeResponse(statusCode: 200, data: json))
+        
+        let exp = expectation(description: "wait from response")
+        sut.loadRestaurants()
+            .subscribe(
+                onSuccess: { result in
+                    XCTAssertEqual(result, [restaurant.model])
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     //MARK: - Helpers
@@ -64,6 +230,43 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
         let sut = RemoteRestaurantListLoader(url: url, client: spy)
         
         return (sut, spy)
+    }
+    
+    private func makeResult(_ restaurants: [[String: Any]] ) -> Data {
+        let json: [String: Any] = [
+            "restaurants": restaurants
+        ]
+        
+        return try! JSONSerialization.data(withJSONObject: json)
+    }
+    
+    private func makeRestaurant(
+        id: String = "an-id",
+        name: String = "a name",
+        description: String = "a description",
+        pictureId: String = "a pictureId",
+        city: String = "a city",
+        rating: Double = 4.6
+    ) -> (model: RestaurantEntity, json: [String: Any]) {
+        let model = RestaurantEntity(
+            id: id,
+            name: name,
+            description: description,
+            pictureId: pictureId,
+            city: city,
+            rating: rating
+        )
+        
+        let json: [String: Any] = [
+            "id" : id,
+            "name": name,
+            "description": description,
+            "pictureId": pictureId,
+            "city": city,
+            "rating": rating,
+        ]
+        
+        return (model, json)
     }
     
     private class HTTPClientSpy: HTTPClient {
@@ -101,6 +304,9 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
     
 }
 
+func anyError() -> NSError {
+    NSError(domain: "an-error", code: -99999)
+}
 
 func anyURL() -> URL {
     URL(string: "http://any-url.com")!

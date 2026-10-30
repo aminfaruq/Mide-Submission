@@ -8,14 +8,6 @@
 import Foundation
 import RxSwift
 
-
-
-public enum NetworkError: Swift.Error, LocalizedError, Equatable {
-    case connectivity
-    case invalidData
-    case decodeError
-}
-
 public protocol RestaurantListLoader {
     func loadRestaurants(query: String) -> Single<[RestaurantEntity]>
 }

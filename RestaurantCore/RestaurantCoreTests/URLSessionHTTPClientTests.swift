@@ -19,15 +19,19 @@ final class URLSessionHTTPClient {
     
     func get(from url: URL) -> Single<HTTPClient.Result> {
         return Single.create { [session] single in
-            let task = session.dataTask(with: url) { _, _, error in
+            let task = session.dataTask(with: url) { data, response, error in
                 if let error {
                     single(.failure(error))
                     return
                 }
                 
-                single(.failure(UnexpectedValuesRepresentation()))
+                guard let data = data, let httpResponse = response as? HTTPURLResponse else {
+                    single(.failure(UnexpectedValuesRepresentation()))
+                    return
+                }
+                
+                single(.success((data, httpResponse)))
             }
-            
             
             task.resume()
             
@@ -114,7 +118,28 @@ final class URLSessionHTTPClientTests: XCTestCase {
             .disposed(by: disposeBag)
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_getFromURL_deliversResultFromURL() {
+        let (data, response) = makeResponse(statusCode: 200, data: "any-data".data(using: .utf8)!)
         
+        URLProtocolStub.stub = { _ in
+            return (data, response)
+        }
+        
+        let exp = expectation(description: "wait from response")
+        makeSUT().get(from: anyURL())
+            .subscribe(
+                onSuccess: { receivedData, receivedResponse in
+                    XCTAssertEqual(receivedData, data)
+                    XCTAssertEqual(receivedResponse.url, response.url)
+                    XCTAssertEqual(receivedResponse.statusCode, response.statusCode)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
     }
 
     //MARK: Helpers

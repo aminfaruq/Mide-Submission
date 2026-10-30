@@ -19,7 +19,13 @@ final class URLSessionHTTPClient {
     
     func get(from url: URL) -> Single<HTTPClient.Result> {
         return Single.create { [session] single in
-            let task = session.dataTask(with: url)
+            let task = session.dataTask(with: url) { _, _, error in
+                if let error {
+                    single(.failure(error))
+                    return
+                }
+                
+            }
             
             
             task.resume()
@@ -54,6 +60,28 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         makeSUT().get(from: url)
             .subscribe()
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_getFromURL_deliversErrorOnFailure() {
+        let expectedError = anyError()
+        let exp = expectation(description: "wait from response")
+
+        URLProtocolStub.stub = { _ in
+            throw expectedError
+        }
+        
+        makeSUT().get(from: anyURL())
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as NSError
+                    XCTAssertEqual(receivedError.code, expectedError.code)
+                    XCTAssertEqual(receivedError.domain, expectedError.domain)
+                    exp.fulfill()
+                }
+            )
             .disposed(by: disposeBag)
         
         wait(for: [exp], timeout: 1.0)

@@ -88,15 +88,4 @@ final class LocalCacheSaverTests: XCTestCase {
         
         return (sut, spy)
     }
-    
-    private func makeRestaurant(name: String) -> RestaurantEntity {
-        .init(
-            id: UUID().uuidString,
-            name: name,
-            description: "a desc",
-            pictureId: "an id",
-            city:  "any-city",
-            rating: 4.5
-        )
-    }
 }

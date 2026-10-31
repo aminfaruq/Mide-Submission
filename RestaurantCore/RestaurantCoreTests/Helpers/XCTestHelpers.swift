@@ -42,3 +42,15 @@ func makeResponse(
     )!
     return (data, response)
 }
+
+// MARK: - Entity helpers
+func makeRestaurant(name: String) -> RestaurantEntity {
+    .init(
+        id: UUID().uuidString,
+        name: name,
+        description: "a desc",
+        pictureId: "an id",
+        city:  "any-city",
+        rating: 4.5
+    )
+}

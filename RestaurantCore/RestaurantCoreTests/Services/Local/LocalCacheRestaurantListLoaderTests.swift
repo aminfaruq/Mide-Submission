@@ -9,31 +9,6 @@ import XCTest
 import RxSwift
 import RestaurantCore
 
-final class LocalCacheRestaurantListLoader: RestaurantListLoader {
-    
-    private let store: CacheStore
-    
-    init(store: CacheStore) {
-        self.store = store
-    }
-    
-    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
-        return store.retrieve()
-            .map { restaurants in
-                let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                if trimmedQuery.isEmpty {
-                    return restaurants
-                } else {
-                    return restaurants.filter { restaurant in
-                        restaurant.name.localizedCaseInsensitiveContains(trimmedQuery)
-                    }
-                }
-            }
-    }
-    
-}
-
 final class LocalCacheRestaurantListLoaderTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

@@ -34,7 +34,6 @@ final class LocalFavoriteServiceTests: XCTestCase {
             )
             .disposed(by: disposeBag)
         
-        
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(spy.messages, [.save(insertion)])
@@ -54,7 +53,6 @@ final class LocalFavoriteServiceTests: XCTestCase {
                 }
             )
             .disposed(by: disposeBag)
-        
         
         wait(for: [exp], timeout: 1.0)
         
@@ -77,13 +75,12 @@ final class LocalFavoriteServiceTests: XCTestCase {
             )
             .disposed(by: disposeBag)
         
-        
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(spy.messages, [.isFavorite(id: anyId)])
     }
 
-    //MARK: Helpers
+    // MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line

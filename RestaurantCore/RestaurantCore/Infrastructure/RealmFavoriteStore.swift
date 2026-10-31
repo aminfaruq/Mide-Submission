@@ -62,7 +62,6 @@ public final class RealmFavoriteStore: FavoriteStore {
                 single(.failure(error))
             }
             
-            
             return Disposables.create()
         }
     }

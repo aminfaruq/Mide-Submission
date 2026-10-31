@@ -53,7 +53,7 @@ func makeRestaurant(
         name: name,
         description: "a desc",
         pictureId: "an id",
-        city:  "any-city",
+        city: "any-city",
         rating: 4.5
     )
 }

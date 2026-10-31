@@ -16,7 +16,6 @@ final class LocalCacheSaverTests: XCTestCase {
     func test_init_doesNotMessageUponCreation() {
         let (_, spy) = makeSUT()
         
-        
         XCTAssertEqual(spy.messages, [])
     }
     
@@ -74,8 +73,7 @@ final class LocalCacheSaverTests: XCTestCase {
         XCTAssertEqual(spy.messages, [.save(items)])
     }
     
-    
-    //MARK: - Helpers
+    // MARK: - Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line

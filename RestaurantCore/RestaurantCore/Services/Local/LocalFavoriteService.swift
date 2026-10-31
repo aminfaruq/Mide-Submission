@@ -9,8 +9,8 @@ import RxSwift
 
 public protocol FavoriteService {
     func save(_ restaurant: RestaurantEntity) -> Completable
-    func remove(id: String)  -> Completable
-    func isFavorite(id: String)  -> Single<Bool>
+    func remove(id: String) -> Completable
+    func isFavorite(id: String) -> Single<Bool>
 }
 
 public final class LocalFavoriteService: FavoriteService {

@@ -49,7 +49,6 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
             )
             .disposed(by: disposeBag)
         
-        
         wait(for: [exp], timeout: 1.0)
     }
     
@@ -131,7 +130,6 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
         XCTAssertEqual(spy.messages, [.post(expectedURL, body: body)])
     }
     
-    
     func test_addReview_deliversErrorConnectivity() {
         let (sut, spy) = makeSUT()
         spy.stub = .error(anyError())
@@ -147,7 +145,6 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
                 }
             )
             .disposed(by: disposeBag)
-        
         
         wait(for: [exp], timeout: 1.0)
     }
@@ -190,7 +187,7 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    //MARK: - Helpers
+    // MARK: - Helpers
     private func makeSUT(
         url: URL = anyURL(),
         file: StaticString = #filePath,
@@ -285,7 +282,7 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
     
     private func makeNames(input: String) -> [String: Any] {
         let json: [String: Any] = [
-            "name": input,
+            "name": input
         ]
         return json
     }
@@ -293,7 +290,7 @@ final class RemoteRestaurantDetailLoaderTests: XCTestCase {
     private func makeMenus(input: [[String: Any]]) -> [String: Any] {
         let json: [String: Any] = [
             "foods": input,
-            "drinks": input,
+            "drinks": input
         ]
         return json
     }

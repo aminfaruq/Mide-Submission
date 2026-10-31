@@ -48,7 +48,6 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
             )
             .disposed(by: disposeBag)
         
-        
         wait(for: [exp], timeout: 1.0)
     }
     
@@ -132,7 +131,7 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    //MARK: - Helpers
+    // MARK: - Helpers
     private func makeSUT(
         url: URL = anyURL(),
         file: StaticString = #filePath,
@@ -176,15 +175,14 @@ final class RemoteRestaurantListLoaderTests: XCTestCase {
         )
         
         let json: [String: Any] = [
-            "id" : id,
+            "id": id,
             "name": name,
             "description": description,
             "pictureId": pictureId,
             "city": city,
-            "rating": rating,
+            "rating": rating
         ]
         
         return (model, json)
     }
 }
-

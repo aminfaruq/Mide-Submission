@@ -38,7 +38,6 @@ final class RealmCacheObject: Object {
     }
 }
 
-
 public final class RealmCacheStore: CacheStore {
     
     private let configuration: Realm.Configuration
@@ -88,4 +87,3 @@ public final class RealmCacheStore: CacheStore {
         }
     }
 }
-

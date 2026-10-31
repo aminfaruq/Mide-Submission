@@ -103,7 +103,7 @@ final class LocalFavoriteRestaurantListLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    //MARK: - Helpers
+    // MARK: - Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line

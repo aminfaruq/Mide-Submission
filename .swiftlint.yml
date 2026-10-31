@@ -1,0 +1,11 @@
+disabled_rules:
+  - trailing_whitespace 
+
+included:
+  - RestaurantCore  
+
+excluded:
+  - Pods
+  - Carthage
+  - Build
+  - RestaurantCoreTests

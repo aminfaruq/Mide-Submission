@@ -45,6 +45,7 @@
 		83C2DE153096655D008D3591 /* RestaurantAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestaurantAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		83C2DE1E30966574008D3591 /* RestaurantApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RestaurantApp.xctestplan; sourceTree = "<group>"; };
 		83C2DE83309666DA008D3591 /* RestaurantCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RestaurantCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		83C2DF293096A566008D3591 /* RestaurantCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RestaurantCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -120,6 +121,7 @@
 		83C2DE82309666DA008D3591 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				83C2DF293096A566008D3591 /* RestaurantCore.framework */,
 				83C2DE83309666DA008D3591 /* RestaurantCore.framework */,
 			);
 			name = Frameworks;
@@ -491,6 +493,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aminfaruq.RestaurantAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;

@@ -1,6 +1,15 @@
 {
-  "originHash" : "758f42a382be6767a83336ae97070ac405e33793fea95b22ebda1ff0203514c4",
+  "originHash" : "1a2624c8db760f69fff8eed3b2d69f2566fae7dfa20674d46b492d75e4d8c36b",
   "pins" : [
+    {
+      "identity" : "factory",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Factory.git",
+      "state" : {
+        "revision" : "ab10ce2786f18c66e551afe61fa0b650f0b6e55b",
+        "version" : "3.5.2"
+      }
+    },
     {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",

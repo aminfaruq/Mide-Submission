@@ -11,6 +11,7 @@
 		83C2DE8130966670008D3591 /* RxTest in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DE8030966670008D3591 /* RxTest */; };
 		83C2DE84309666DA008D3591 /* RestaurantCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83C2DE83309666DA008D3591 /* RestaurantCore.framework */; };
 		83C2DE85309666DA008D3591 /* RestaurantCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 83C2DE83309666DA008D3591 /* RestaurantCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		83C2DE9030966A89008D3591 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DE8F30966A89008D3591 /* FactoryKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83C2DE9030966A89008D3591 /* FactoryKit in Frameworks */,
 				83C2DE84309666DA008D3591 /* RestaurantCore.framework in Frameworks */,
 				83C2DE7F30966670008D3591 /* RxSwift in Frameworks */,
 			);
@@ -141,6 +143,7 @@
 			name = RestaurantApp;
 			packageProductDependencies = (
 				83C2DE7E30966670008D3591 /* RxSwift */,
+				83C2DE8F30966A89008D3591 /* FactoryKit */,
 			);
 			productName = RestaurantApp;
 			productReference = 83C2DDF930966522008D3591 /* RestaurantApp.app */;
@@ -200,6 +203,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				83C2DE7D30966670008D3591 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83C2DDFA30966522008D3591 /* Products */;
@@ -543,6 +547,14 @@
 				minimumVersion = 6.10.2;
 			};
 		};
+		83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -555,6 +567,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83C2DE7D30966670008D3591 /* XCRemoteSwiftPackageReference "RxSwift" */;
 			productName = RxTest;
+		};
+		83C2DE8F30966A89008D3591 /* FactoryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

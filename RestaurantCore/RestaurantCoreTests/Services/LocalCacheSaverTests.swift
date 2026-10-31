@@ -9,23 +9,6 @@ import XCTest
 import RxSwift
 import RestaurantCore
 
-public protocol CacheSaver {
-    func save(_ restaurants: [RestaurantEntity]) -> Completable
-}
-
-final class LocalCacheSaver {
-    
-    private let store: CacheStore
-    
-    init(store: CacheStore) {
-        self.store = store
-    }
-    
-    func save(_ restaurants: [RestaurantEntity]) -> Completable {
-        return store.save(restaurants)
-    }
-}
-
 final class LocalCacheSaverTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

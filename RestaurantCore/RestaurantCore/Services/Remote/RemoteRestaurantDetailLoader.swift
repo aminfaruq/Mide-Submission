@@ -57,21 +57,31 @@ public final class RemoteRestaurantDetailLoader: RestaurantDetailLoader {
     }
     
     public func addReview(review: AddReviewBody) -> Completable {
-        let requestedURL = url
-            .appending(path: "review")
-        let body = makeBody(from: review)
-        return client.post(to: requestedURL, body: body)
-            .catch({ _ in
-                return .error(NetworkError.connectivity)
-            })
-            .flatMapCompletable { _, response in
-                switch response.statusCode {
-                    case 201:
-                        return .empty()
-                    default:
-                        return .error(NetworkError.invalidData)
-                }
+        return Completable.deferred { [weak self] in
+            guard let self = self else {
+                return Completable.error(NetworkError.connectivity)
             }
+            
+            do {
+                let requestedURL = self.url
+                    .appending(path: "review")
+                let body = try makeBody(from: review)
+                return client.post(to: requestedURL, body: body)
+                    .catch({ _ in
+                        return .error(NetworkError.connectivity)
+                    })
+                    .flatMapCompletable { _, response in
+                        switch response.statusCode {
+                            case 201:
+                                return .empty()
+                            default:
+                                return .error(NetworkError.invalidData)
+                        }
+                    }
+            } catch {
+                return Completable.error(error)
+            }
+        }
     }
 }
 
@@ -127,16 +137,17 @@ extension RemoteRestaurantDetailLoader {
         }
     }
     
-    private func makeBody(from review: AddReviewBody) -> HTTPBody {
+    private func makeBody(from review: AddReviewBody) throws -> HTTPBody {
         let requestDTO = AddReviewRequestDTO(id: review.id, name: review.name, review: review.review)
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
         
-        guard let data = try? encoder.encode(requestDTO) else {
-            fatalError(NetworkError.invalidData.localizedDescription)
+        do {
+            let data = try encoder.encode(requestDTO)
+            return HTTPBody(data: data, contentType: .json)
+        } catch {
+            throw NetworkError.invalidData
         }
-        
-        return HTTPBody(data: data, contentType: .json)
     }
     
     private struct AddReviewRequestDTO: Encodable {

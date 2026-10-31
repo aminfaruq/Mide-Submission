@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="111" id="LkL-LK-LJ2" customClass="RestaurantTableViewCell" customModule="RestaurantApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="111"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LkL-LK-LJ2" id="iDQ-8N-jSn">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="111"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zS3-uR-Rac" userLabel="Restaurant Image">
+                        <rect key="frame" x="12" y="12" width="90" height="90"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="90" id="imd-3p-8HX"/>
+                            <constraint firstAttribute="height" constant="90" id="uwM-od-jqZ"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Restaurant 1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7q-5h-oNZ">
+                        <rect key="frame" x="114" y="12" width="194" height="21"/>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mappin.and.ellipse" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="9By-dS-TxO" userLabel="Location Point Image">
+                        <rect key="frame" x="114" y="39.666666666666657" width="12" height="13.333333333333336"/>
+                        <color key="tintColor" systemColor="systemRedColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="12" id="EHW-e9-Te9"/>
+                            <constraint firstAttribute="height" constant="12" id="x4r-yP-STw"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="St. Somewhre on earth" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f19-Kk-S1J">
+                        <rect key="frame" x="134" y="41" width="174" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" systemColor="systemGray2Color"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="drV-b8-BHV" userLabel="Rating Image">
+                        <rect key="frame" x="114" y="64.666666666666671" width="12" height="11.666666666666671"/>
+                        <color key="tintColor" systemColor="systemOrangeColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="12" id="8OQ-8G-8QN"/>
+                            <constraint firstAttribute="height" constant="12" id="Odk-Ra-JTk"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4.6" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KoJ-sG-f7G">
+                        <rect key="frame" x="134" y="64" width="174" height="15"/>
+                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
+                        <color key="textColor" systemColor="systemOrangeColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                <constraints>
+                    <constraint firstItem="drV-b8-BHV" firstAttribute="top" secondItem="9By-dS-TxO" secondAttribute="bottom" constant="12" id="1lI-lm-z94"/>
+                    <constraint firstAttribute="trailing" secondItem="KoJ-sG-f7G" secondAttribute="trailing" constant="12" id="9Dt-fK-red"/>
+                    <constraint firstItem="E7q-5h-oNZ" firstAttribute="top" secondItem="iDQ-8N-jSn" secondAttribute="top" constant="12" id="BAY-8g-tuJ"/>
+                    <constraint firstItem="9By-dS-TxO" firstAttribute="top" secondItem="E7q-5h-oNZ" secondAttribute="bottom" constant="8" id="Dj2-r3-k0t"/>
+                    <constraint firstItem="f19-Kk-S1J" firstAttribute="leading" secondItem="9By-dS-TxO" secondAttribute="trailing" constant="8" id="EBx-Xx-bWR"/>
+                    <constraint firstAttribute="trailing" secondItem="f19-Kk-S1J" secondAttribute="trailing" constant="12" id="Njj-RE-UK1"/>
+                    <constraint firstItem="zS3-uR-Rac" firstAttribute="leading" secondItem="iDQ-8N-jSn" secondAttribute="leading" constant="12" id="P2I-3i-YG4"/>
+                    <constraint firstItem="zS3-uR-Rac" firstAttribute="centerY" secondItem="iDQ-8N-jSn" secondAttribute="centerY" id="PT6-Kd-1P6"/>
+                    <constraint firstItem="KoJ-sG-f7G" firstAttribute="top" secondItem="f19-Kk-S1J" secondAttribute="bottom" constant="8" id="TdA-Ud-7jv"/>
+                    <constraint firstItem="KoJ-sG-f7G" firstAttribute="leading" secondItem="drV-b8-BHV" secondAttribute="trailing" constant="8" id="V3b-AI-fRs"/>
+                    <constraint firstAttribute="bottom" secondItem="zS3-uR-Rac" secondAttribute="bottom" constant="12" id="cHd-JN-3Lx"/>
+                    <constraint firstAttribute="trailing" secondItem="E7q-5h-oNZ" secondAttribute="trailing" constant="12" id="iGs-Ce-sV6"/>
+                    <constraint firstItem="f19-Kk-S1J" firstAttribute="top" secondItem="E7q-5h-oNZ" secondAttribute="bottom" constant="8" id="nnh-5X-MhM"/>
+                    <constraint firstItem="zS3-uR-Rac" firstAttribute="top" secondItem="iDQ-8N-jSn" secondAttribute="top" constant="12" id="oQP-qB-00Y"/>
+                    <constraint firstItem="9By-dS-TxO" firstAttribute="leading" secondItem="zS3-uR-Rac" secondAttribute="trailing" constant="12" id="q80-Je-hZC"/>
+                    <constraint firstItem="drV-b8-BHV" firstAttribute="leading" secondItem="zS3-uR-Rac" secondAttribute="trailing" constant="12" id="ryn-fz-8s4"/>
+                    <constraint firstItem="E7q-5h-oNZ" firstAttribute="leading" secondItem="zS3-uR-Rac" secondAttribute="trailing" constant="12" id="sVd-Qv-EHy"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="wbf-u7-5dV"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <connections>
+                <outlet property="locationLabel" destination="f19-Kk-S1J" id="pbQ-V4-zAH"/>
+                <outlet property="ratingLabel" destination="KoJ-sG-f7G" id="srC-Oy-Qc6"/>
+                <outlet property="restaurantImageView" destination="zS3-uR-Rac" id="51m-oO-fCg"/>
+                <outlet property="restaurantLabel" destination="E7q-5h-oNZ" id="n2a-mO-Lg2"/>
+            </connections>
+            <point key="canvasLocation" x="-9.1603053435114496" y="177.11267605633805"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="mappin.and.ellipse" catalog="system" width="110" height="128"/>
+        <image name="star.fill" catalog="system" width="128" height="116"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemOrangeColor">
+            <color red="1" green="0.55294117647058827" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.2196078431372549" blue="0.23529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

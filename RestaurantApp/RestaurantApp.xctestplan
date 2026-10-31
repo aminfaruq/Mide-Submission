@@ -1,0 +1,40 @@
+{
+  "configurations" : [
+    {
+      "id" : "846126A0-A8D8-4A3C-861C-CEEF19C2C0B5",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:RestaurantApp.xcodeproj",
+          "identifier" : "83C2DDF830966522008D3591",
+          "name" : "RestaurantApp"
+        }
+      ]
+    },
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:RestaurantApp.xcodeproj",
+      "identifier" : "83C2DDF830966522008D3591",
+      "name" : "RestaurantApp"
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:RestaurantApp.xcodeproj",
+        "identifier" : "83C2DE143096655D008D3591",
+        "name" : "RestaurantAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}

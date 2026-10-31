@@ -32,34 +32,24 @@ public struct RestaurantDetailItemViewModel: Equatable {
         self.rating = rating
         self.customerReviews = customerReviews
     }
-}
-
-public extension RestaurantDetailEntity {
-    private static let imageBaseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")
     
-    private func makeImageURL(from picture: String) -> URL {
-        if let baseURL = RestaurantDetailEntity.imageBaseURL {
-            return baseURL.appending(path: pictureId)
-        }
-        
-        return URL(string: "about:blank") ?? URL(fileURLWithPath: "")
+    public init(from entity: RestaurantDetailEntity) {
+        self.id = entity.id
+        self.name = entity.name
+        self.description = entity.description
+        self.city = entity.city
+        self.address = entity.address
+        self.pictureURL = Self.makeImageURL(from: entity.pictureId)
+        self.categories = entity.categories.map { CategoryItemViewModel(from: $0) }
+        self.menus = MenuItemViewModel(from: entity.menus)
+        self.rating = "\(entity.rating)"
+        self.customerReviews = entity.customerReviews.map { CustomerReviewItemViewModel(from: $0) }
     }
     
-    func toViewModel() -> RestaurantDetailItemViewModel {
-        .init(
-            id: id,
-            name: name,
-            description: description,
-            city: city,
-            address: address,
-            pictureURL: makeImageURL(from: pictureId),
-            categories: categories.map { $0.toViewModel() },
-            menus: menus.toViewModel(),
-            rating: "\(rating)",
-            customerReviews: customerReviews.map { $0.toViewModel() }
-        )
+    private static func makeImageURL(from pictureId: String) -> URL {
+        let baseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")!
+        return baseURL.appendingPathComponent(pictureId)
     }
-    
 }
 
 public struct CategoryItemViewModel: Equatable {
@@ -68,11 +58,9 @@ public struct CategoryItemViewModel: Equatable {
     public init(name: String) {
         self.name = name
     }
-}
-
-public extension CategoryEntity {
-    func toViewModel() -> CategoryItemViewModel {
-        .init(name: name)
+    
+    public init(from entity: CategoryEntity) {
+        self.name = entity.name
     }
 }
 
@@ -84,14 +72,10 @@ public struct MenuItemViewModel: Equatable {
         self.foods = foods
         self.drinks = drinks
     }
-}
-
-public extension MenuEntity {
-    func toViewModel() -> MenuItemViewModel {
-        .init(
-            foods: foods.map { $0.toViewModel() },
-            drinks: drinks.map { $0.toViewModel() }
-        )
+    
+    public init(from entity: MenuEntity) {
+        self.foods = entity.foods.map { CategoryItemViewModel(from: $0) }
+        self.drinks = entity.drinks.map { CategoryItemViewModel(from: $0) }
     }
 }
 
@@ -105,14 +89,10 @@ public struct CustomerReviewItemViewModel: Equatable {
         self.review = review
         self.date = date
     }
-}
-
-public extension CustomerReviewEntity {
-    func toViewModel() -> CustomerReviewItemViewModel {
-        .init(
-            name: name,
-            review: review,
-            date: date
-        )
+    
+    public init(from entity: CustomerReviewEntity) {
+        self.name = entity.name
+        self.review = entity.review
+        self.date = entity.date
     }
 }

@@ -24,27 +24,18 @@ public struct RestaurantItemViewModel: Equatable {
         self.city = city
         self.rating = rating
     }
-}
-
-public extension RestaurantEntity {
-    private static let imageBaseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")
     
-    private func makeImageURL(from picture: String) -> URL {
-        if let baseURL = RestaurantEntity.imageBaseURL {
-            return baseURL.appending(path: pictureId)
-        }
-        
-        return URL(string: "about:blank") ?? URL(fileURLWithPath: "")
+    public init(from entity: RestaurantEntity) {
+        self.id = entity.id
+        self.name = entity.name
+        self.description = entity.description
+        self.pictureURL = Self.makeImageURL(from: entity.pictureId)
+        self.city = entity.city
+        self.rating = "\(entity.rating)"
     }
     
-    func toViewModel() -> RestaurantItemViewModel {
-        .init(
-            id: id,
-            name: name,
-            description: description,
-            pictureURL: makeImageURL(from: pictureId),
-            city: city,
-            rating: "\(rating)"
-        )
+    private static func makeImageURL(from pictureId: String) -> URL {
+        let baseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")!
+        return baseURL.appendingPathComponent(pictureId)
     }
 }

@@ -9,24 +9,6 @@ import RxSwift
 import XCTest
 import RestaurantCore
 
-final class RestaurantListLoaderWithFallbackComposite: RestaurantListLoader {
-    private let primary: RestaurantListLoader
-    private let fallback: RestaurantListLoader
-    
-    init(primary: RestaurantListLoader, fallback: RestaurantListLoader) {
-        self.primary = primary
-        self.fallback = fallback
-    }
-    
-    func loadRestaurants(query: String) -> Single<[RestaurantEntity]> {
-        return primary.loadRestaurants(query: query)
-            .catch { [fallback] _ in
-                return fallback.loadRestaurants(query: query)
-            }
-    }
-    
-}
-
 final class RestaurantListLoaderWithFallbackCompositeTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

@@ -12,6 +12,7 @@
 		83C2DE84309666DA008D3591 /* RestaurantCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 83C2DE83309666DA008D3591 /* RestaurantCore.framework */; };
 		83C2DE85309666DA008D3591 /* RestaurantCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 83C2DE83309666DA008D3591 /* RestaurantCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		83C2DE9030966A89008D3591 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DE8F30966A89008D3591 /* FactoryKit */; };
+		83C2DEAC30967AE8008D3591 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DEAB30967AE8008D3591 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				83C2DE9030966A89008D3591 /* FactoryKit in Frameworks */,
+				83C2DEAC30967AE8008D3591 /* SnapKit in Frameworks */,
 				83C2DE84309666DA008D3591 /* RestaurantCore.framework in Frameworks */,
 				83C2DE7F30966670008D3591 /* RxSwift in Frameworks */,
 			);
@@ -145,6 +147,7 @@
 			packageProductDependencies = (
 				83C2DE7E30966670008D3591 /* RxSwift */,
 				83C2DE8F30966A89008D3591 /* FactoryKit */,
+				83C2DEAB30967AE8008D3591 /* SnapKit */,
 			);
 			productName = RestaurantApp;
 			productReference = 83C2DDF930966522008D3591 /* RestaurantApp.app */;
@@ -205,6 +208,7 @@
 			packageReferences = (
 				83C2DE7D30966670008D3591 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */,
+				83C2DEAA30967AE8008D3591 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83C2DDFA30966522008D3591 /* Products */;
@@ -574,6 +578,14 @@
 				minimumVersion = 3.5.2;
 			};
 		};
+		83C2DEAA30967AE8008D3591 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -591,6 +603,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = FactoryKit;
+		};
+		83C2DEAB30967AE8008D3591 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83C2DEAA30967AE8008D3591 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

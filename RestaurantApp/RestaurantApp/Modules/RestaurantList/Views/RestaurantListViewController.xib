@@ -29,6 +29,9 @@
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <color key="sectionIndexBackgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="li6-5h-Pml">
+                    <rect key="frame" x="186.66666666666666" y="416" width="20" height="20"/>
+                </activityIndicatorView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Restaurant" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5An-sh-UWe">
                     <rect key="frame" x="12" y="118" width="369" height="37"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="31"/>
@@ -42,10 +45,12 @@
                 <constraint firstItem="5An-sh-UWe" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="FSJ-gM-lF4"/>
                 <constraint firstItem="hKc-r1-ibe" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="IOg-2A-DV8"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Lp2-eo-ZQy" secondAttribute="trailing" constant="12" id="IT3-Pk-B9f"/>
+                <constraint firstItem="li6-5h-Pml" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="LaW-Xe-AHf"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="5An-sh-UWe" secondAttribute="trailing" constant="12" id="Pcu-lq-mPi"/>
                 <constraint firstItem="Lp2-eo-ZQy" firstAttribute="top" secondItem="5An-sh-UWe" secondAttribute="bottom" constant="12" id="Yjx-hu-VD2"/>
                 <constraint firstItem="Lp2-eo-ZQy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="bjJ-8v-PZy"/>
                 <constraint firstAttribute="trailing" secondItem="hKc-r1-ibe" secondAttribute="trailing" id="d8p-yz-dPL"/>
+                <constraint firstItem="li6-5h-Pml" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="dJX-lt-YQj"/>
                 <constraint firstItem="5An-sh-UWe" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="eA0-Vm-7vw"/>
                 <constraint firstItem="hKc-r1-ibe" firstAttribute="top" secondItem="Lp2-eo-ZQy" secondAttribute="bottom" constant="12" id="jgC-NM-zri"/>
                 <constraint firstAttribute="bottom" secondItem="hKc-r1-ibe" secondAttribute="bottom" id="rrb-sp-Ba5"/>

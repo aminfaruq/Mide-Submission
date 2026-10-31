@@ -189,10 +189,15 @@
                         <constraint firstItem="KPd-C9-PXL" firstAttribute="width" secondItem="DUT-T7-toO" secondAttribute="width" id="vW6-j8-Olb"/>
                     </constraints>
                 </scrollView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="86x-2I-MPz">
+                    <rect key="frame" x="186.66666666666666" y="416" width="20" height="20"/>
+                </activityIndicatorView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="86x-2I-MPz" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="48H-gc-bBr"/>
+                <constraint firstItem="86x-2I-MPz" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="7dX-nf-Bqf"/>
                 <constraint firstItem="DUT-T7-toO" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Ftu-HR-7aJ"/>
                 <constraint firstAttribute="bottom" secondItem="DUT-T7-toO" secondAttribute="bottom" id="MEk-U4-YM5"/>
                 <constraint firstItem="DUT-T7-toO" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="QOD-5m-M08"/>

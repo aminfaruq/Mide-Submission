@@ -30,5 +30,6 @@ public final class RestaurantListInteractor: RestaurantListInteractorProtocol {
         return loader.loadRestaurants(query: query)
     }
     
+    // Workaround bug compiler XCTest multi module
     nonisolated deinit {}
 }

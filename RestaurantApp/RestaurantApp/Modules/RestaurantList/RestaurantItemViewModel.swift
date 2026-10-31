@@ -5,6 +5,7 @@
 //  Created by Amin faruq on 01/11/26.
 //
 
+import RestaurantCore
 import Foundation
 
 public struct RestaurantItemViewModel: Equatable {
@@ -22,5 +23,28 @@ public struct RestaurantItemViewModel: Equatable {
         self.pictureURL = pictureURL
         self.city = city
         self.rating = rating
+    }
+}
+
+public extension RestaurantEntity {
+    private static let imageBaseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")
+    
+    private func makeImageURL(from picture: String) -> URL {
+        if let baseURL = RestaurantEntity.imageBaseURL {
+            return baseURL.appending(path: pictureId)
+        }
+        
+        return URL(string: "about:blank") ?? URL(fileURLWithPath: "")
+    }
+    
+    func toViewModel() -> RestaurantItemViewModel {
+        .init(
+            id: id,
+            name: name,
+            description: description,
+            pictureURL: makeImageURL(from: pictureId),
+            city: city,
+            rating: "\(rating)"
+        )
     }
 }

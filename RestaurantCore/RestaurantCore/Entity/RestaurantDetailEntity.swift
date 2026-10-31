@@ -29,6 +29,17 @@ public struct RestaurantDetailEntity: Equatable {
         self.rating = rating
         self.customerReviews = customerReviews
     }
+    
+    public func toRestaurantEntity() -> RestaurantEntity {
+        .init(
+            id: id,
+            name: name,
+            description: description,
+            pictureId: pictureId,
+            city: city,
+            rating: rating
+        )
+    }
 }
 
 public struct CategoryEntity: Equatable {

@@ -16,12 +16,12 @@ class CacheStoreSpy: CacheStore {
     
     private(set) var messages = [Message]()
     
-    var retriveStub: Single<[RestaurantEntity]> = .never()
+    var retrieveStub: Single<[RestaurantEntity]> = .never()
     var saveStub: Completable = .never()
     
     func retrieve() -> Single<[RestaurantEntity]> {
         messages.append(.retrieve)
-        return retriveStub
+        return retrieveStub
     }
     
     func save(_ restaurants: [RestaurantEntity]) -> Completable {

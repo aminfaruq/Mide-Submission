@@ -11,7 +11,7 @@ public protocol CacheSaver {
     func save(_ restaurants: [RestaurantEntity]) -> Completable
 }
 
-public final class LocalCacheSaver {
+public final class LocalCacheSaver: CacheSaver {
     
     private let store: CacheStore
     

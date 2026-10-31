@@ -9,28 +9,6 @@ import XCTest
 import RestaurantCore
 import RxSwift
 
-final class RestaurantListLoaderCacheDecorator: RestaurantListLoader {
-    
-    private let decoratee: RestaurantListLoader
-    private let cache: CacheSaver
-    
-    init(decoratee: RestaurantListLoader, cache: CacheSaver) {
-        self.decoratee = decoratee
-        self.cache = cache
-    }
-    
-    func loadRestaurants(query: String) -> Single<[RestaurantEntity]> {
-        return decoratee.loadRestaurants(query: query)
-            .flatMap { [weak self] results in
-                guard let self = self else { return .just(results) }
-                return self.cache.save(results)
-                    .catch { _ in .empty() }
-                    .andThen(Single.just(results))
-            }
-    }
-    
-}
-
 final class RestaurantListLoaderCacheDecoratorTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

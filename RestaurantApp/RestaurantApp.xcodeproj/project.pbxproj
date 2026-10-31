@@ -13,6 +13,7 @@
 		83C2DE85309666DA008D3591 /* RestaurantCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 83C2DE83309666DA008D3591 /* RestaurantCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		83C2DE9030966A89008D3591 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DE8F30966A89008D3591 /* FactoryKit */; };
 		83C2DEAC30967AE8008D3591 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DEAB30967AE8008D3591 /* SnapKit */; };
+		83C2DEAF30968141008D3591 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DEAE30968141008D3591 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,7 @@
 				83C2DEAC30967AE8008D3591 /* SnapKit in Frameworks */,
 				83C2DE84309666DA008D3591 /* RestaurantCore.framework in Frameworks */,
 				83C2DE7F30966670008D3591 /* RxSwift in Frameworks */,
+				83C2DEAF30968141008D3591 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +150,7 @@
 				83C2DE7E30966670008D3591 /* RxSwift */,
 				83C2DE8F30966A89008D3591 /* FactoryKit */,
 				83C2DEAB30967AE8008D3591 /* SnapKit */,
+				83C2DEAE30968141008D3591 /* Kingfisher */,
 			);
 			productName = RestaurantApp;
 			productReference = 83C2DDF930966522008D3591 /* RestaurantApp.app */;
@@ -209,6 +212,7 @@
 				83C2DE7D30966670008D3591 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				83C2DE8E30966A89008D3591 /* XCRemoteSwiftPackageReference "Factory" */,
 				83C2DEAA30967AE8008D3591 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				83C2DEAD30968140008D3591 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83C2DDFA30966522008D3591 /* Products */;
@@ -586,6 +590,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		83C2DEAD30968140008D3591 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.14.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -608,6 +620,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83C2DEAA30967AE8008D3591 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		83C2DEAE30968141008D3591 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83C2DEAD30968140008D3591 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

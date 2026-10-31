@@ -99,26 +99,4 @@ final class LocalCacheSaverTests: XCTestCase {
             rating: 4.5
         )
     }
-    
-    private class CacheStoreSpy: CacheStore {
-        enum Message: Equatable {
-            case retrieve
-            case save(_ restaurants: [RestaurantEntity])
-        }
-        
-        private(set) var messages = [Message]()
-        
-        var retriveStub: Single<[RestaurantEntity]> = .never()
-        var saveStub: Completable = .never()
-        
-        func retrieve() -> Single<[RestaurantEntity]> {
-            messages.append(.retrieve)
-            return retriveStub
-        }
-        
-        func save(_ restaurants: [RestaurantEntity]) -> Completable {
-            messages.append(.save(restaurants))
-            return saveStub
-        }
-    }
 }

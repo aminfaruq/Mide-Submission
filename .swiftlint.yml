@@ -2,10 +2,12 @@ disabled_rules:
   - trailing_whitespace 
 
 included:
-  - RestaurantCore  
+  - RestaurantCore
+  - RestaurantApp
 
 excluded:
   - Pods
   - Carthage
   - Build
   - RestaurantCoreTests
+  - RestaurantAppTests

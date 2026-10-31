@@ -11,6 +11,8 @@
 		83C2DCFC3094B046008D3591 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DCFB3094B046008D3591 /* RxSwift */; };
 		83C2DCFE3094B046008D3591 /* RxTest in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DCFD3094B046008D3591 /* RxTest */; };
 		83C2DD2F3094EA98008D3591 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DD2E3094EA98008D3591 /* RealmSwift */; };
+		83C2DDDB30961055008D3591 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DDDA30961055008D3591 /* RealmSwift */; };
+		83C2DDDC30961055008D3591 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 83C2DDDA30961055008D3591 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +32,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				83C2DDDC30961055008D3591 /* RealmSwift in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83C2DDDB30961055008D3591 /* RealmSwift in Frameworks */,
 				83C2DCFE3094B046008D3591 /* RxTest in Frameworks */,
 				83C2DCEC3094AFFA008D3591 /* RestaurantCore.framework in Frameworks */,
 			);
@@ -162,6 +166,7 @@
 			name = RestaurantCoreTests;
 			packageProductDependencies = (
 				83C2DCFD3094B046008D3591 /* RxTest */,
+				83C2DDDA30961055008D3591 /* RealmSwift */,
 			);
 			productName = RestaurantCoreTests;
 			productReference = 83C2DCEB3094AFFA008D3591 /* RestaurantCoreTests.xctest */;
@@ -561,6 +566,11 @@
 			productName = RxTest;
 		};
 		83C2DD2E3094EA98008D3591 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83C2DD2D3094EA98008D3591 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		83C2DDDA30961055008D3591 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 83C2DD2D3094EA98008D3591 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;

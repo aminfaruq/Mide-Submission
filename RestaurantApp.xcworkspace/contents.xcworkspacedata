@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:RestaurantApp/RestaurantApp.xcodeproj">
+      location = "group:RestaurantCore/RestaurantCore.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:RestaurantCore/RestaurantCore.xcodeproj">
+      location = "group:RestaurantApp/RestaurantApp.xcodeproj">
    </FileRef>
 </Workspace>

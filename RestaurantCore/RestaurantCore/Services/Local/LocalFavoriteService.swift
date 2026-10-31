@@ -1,5 +1,5 @@
 //
-//  LocalRestaurantDetailService.swift
+//  LocalFavoriteService.swift
 //  RestaurantCore
 //
 //  Created by Amin faruq on 31/10/26.
@@ -13,7 +13,7 @@ public protocol FavoriteService {
     func isFavorite(id: String)  -> Single<Bool>
 }
 
-public final class LocalRestaurantDetailService: FavoriteService {
+public final class LocalFavoriteService: FavoriteService {
 
     private let store: FavoriteStore
     

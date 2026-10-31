@@ -1,0 +1,34 @@
+//
+//  RestaurantListInteractor.swift
+//  RestaurantApp
+//
+//  Created by Amin faruq on 01/11/26.
+//
+
+import RxSwift
+import RestaurantCore
+
+public protocol RestaurantListInteractorProtocol: AnyObject {
+    func loadRestaurants(query: String) -> Single<[RestaurantEntity]>
+}
+
+public extension RestaurantListInteractorProtocol {
+    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
+        loadRestaurants(query: query)
+    }
+}
+
+public final class RestaurantListInteractor: RestaurantListInteractorProtocol {
+    
+    private let loader: RestaurantListLoader
+    
+    public init(loader: RestaurantListLoader) {
+        self.loader = loader
+    }
+    
+    public func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
+        return loader.loadRestaurants(query: query)
+    }
+    
+    nonisolated deinit {}
+}

@@ -10,19 +10,6 @@ import RestaurantCore
 import RestaurantApp
 import RxSwift
 
-final class RestaurantListInteractor {
-    
-    private let loader: RestaurantListLoader
-    
-    init(loader: RestaurantListLoader) {
-        self.loader = loader
-    }
-    
-    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
-        return loader.loadRestaurants(query: query)
-    }
-}
-
 final class RestaurantListInteractorTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

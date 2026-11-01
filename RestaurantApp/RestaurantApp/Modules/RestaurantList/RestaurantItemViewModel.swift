@@ -7,6 +7,7 @@
 
 import RestaurantCore
 import Foundation
+import FactoryKit
 
 public struct RestaurantItemViewModel: Equatable {
     public let id: String
@@ -35,7 +36,7 @@ public struct RestaurantItemViewModel: Equatable {
     }
     
     private static func makeImageURL(from pictureId: String) -> URL {
-        let baseURL = URL(string: "https://restaurant-api.dicoding.dev/images/medium")!
+        let baseURL = Container.shared.baseImageURL.resolve()
         return baseURL.appendingPathComponent(pictureId)
     }
 }

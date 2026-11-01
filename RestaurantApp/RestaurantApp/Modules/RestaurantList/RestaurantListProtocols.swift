@@ -42,7 +42,7 @@ public protocol RestaurantListPresenterProtocol: AnyObject {
 
 // MARK: - Router
 public protocol RestaurantListRouterProtocol: AnyObject {
-    static func createModule() -> UIViewController
+    static func createModule(loader: RestaurantListLoader) -> UIViewController
     
     func navigateToDetail(view: RestaurantListViewProtocol?, id: String)
 }

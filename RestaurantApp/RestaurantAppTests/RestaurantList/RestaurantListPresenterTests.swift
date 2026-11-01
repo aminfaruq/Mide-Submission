@@ -251,7 +251,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         
         //MARK: - Router
         var observeId = ""
-        static func createModule() -> UIViewController {  UIViewController() }
+        static func createModule(loader: RestaurantListLoader) -> UIViewController {  UIViewController() }
         
         func navigateToDetail(view: (any RestaurantListViewProtocol)?, id: String) {
             observeId = id

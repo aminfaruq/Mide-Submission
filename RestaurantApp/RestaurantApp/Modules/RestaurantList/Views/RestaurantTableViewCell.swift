@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class RestaurantTableViewCell: UITableViewCell {
 
@@ -14,4 +15,19 @@ class RestaurantTableViewCell: UITableViewCell {
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var ratingLabel: UILabel!
     
+    static let identifier = "RestaurantTableViewCell"
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+        restaurantImageView.layer.cornerRadius = 8.0
+    }
+
+    func configure(_ result: RestaurantItemViewModel) {
+        restaurantImageView.kf.indicatorType = .activity
+        restaurantImageView.kf.setImage(with: result.pictureURL)
+        restaurantLabel.text = result.name
+        locationLabel.text = result.city
+        ratingLabel.text = result.rating
+    }
 }

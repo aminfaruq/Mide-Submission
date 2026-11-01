@@ -26,7 +26,7 @@ protocol RestaurantListRouterProtocol: AnyObject {
 
 final class RestaurantListPresenter {
     
-    var view: RestaurantListViewProtocol?
+    weak var view: RestaurantListViewProtocol?
     var interactor: RestaurantListInteractorProtocol?
     var router: RestaurantListRouterProtocol?
     
@@ -255,6 +255,18 @@ final class RestaurantListPresenterTests: XCTestCase {
         sut.didSelectRestaurant(id: id)
         
         XCTAssertEqual(spy.observeId, id)
+    }
+    
+    func test_view_shouldHaveBeenDeallocated() {
+        let (sut, _, _) = makeSUT()
+        
+        do {
+            let tempView = ViewSpy()
+            sut.view = tempView
+            XCTAssertNotNil(sut.view)
+        }
+
+        XCTAssertNil(sut.view)
     }
     
     //MARK: Helpers

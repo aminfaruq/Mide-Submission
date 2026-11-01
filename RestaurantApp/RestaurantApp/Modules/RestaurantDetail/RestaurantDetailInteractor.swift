@@ -8,13 +8,6 @@
 import RxSwift
 import RestaurantCore
 
-public protocol RestaurantDetailInteractorProtocol: AnyObject {
-    func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity>
-    func addReview(body: AddReviewBody) -> Completable
-    func isFavorite(id: String) -> Single<Bool>
-    func toggleFavorite(restaurant: RestaurantEntity) -> Single<Bool>
-}
-
 public final class RestaurantDetailInteractor: RestaurantDetailInteractorProtocol {
     
     private let loader: RestaurantDetailLoader

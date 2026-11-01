@@ -8,15 +8,6 @@
 import RxSwift
 import RestaurantCore
 
-public protocol RestaurantListInteractorProtocol: AnyObject {
-    func loadRestaurants(query: String) -> Single<[RestaurantEntity]>
-}
-
-public extension RestaurantListInteractorProtocol {
-    func loadRestaurants(query: String = "") -> Single<[RestaurantEntity]> {
-        loadRestaurants(query: query)
-    }
-}
 
 public final class RestaurantListInteractor: RestaurantListInteractorProtocol {
     

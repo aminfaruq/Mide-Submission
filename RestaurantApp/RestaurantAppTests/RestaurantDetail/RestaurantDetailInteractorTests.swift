@@ -27,6 +27,10 @@ final class RestaurantDetailInteractor {
     func addReview(body: AddReviewBody) -> Completable {
         return loader.addReview(review: body)
     }
+    
+    func isFavorite(id: String) -> Single<Bool> {
+        return service.isFavorite(id: id)
+    }
 }
 
 final class RestaurantDetailInteractorTests: XCTestCase {
@@ -114,9 +118,42 @@ final class RestaurantDetailInteractorTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_isFavorite_deliversErrorOnFailure() {}
+    func test_isFavorite_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.isFavoriteStub = .error(expectedError)
+        
+        let exp = expectation(description: "wait from response")
+        sut.isFavorite(id: anyId())
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as NSError
+                    XCTAssertEqual(receivedError.domain, expectedError.domain)
+                    XCTAssertEqual(receivedError.code, expectedError.code)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
-    func test_isFavorite_deliversStatusOnSuccess() {}
+    func test_isFavorite_deliversStatusOnSuccess() {
+        let (sut, spy) = makeSUT()
+        spy.isFavoriteStub = .just(true)
+        
+        let exp = expectation(description: "wait from response")
+        sut.isFavorite(id: anyId())
+            .subscribe(
+                onSuccess: { state in
+                    XCTAssertTrue(state)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
     func test_toggleFavorite_savesWhenNotFavorite() {}
     

@@ -51,6 +51,10 @@ final class RestaurantListPresenter {
         searchSubject.onNext(query)
     }
     
+    func didSelectRestaurant(id: String) {
+        router?.navigateToDetail(view: view, id: id)
+    }
+    
     private func setupSearchPipeline() {
         searchSubject
             .debounce(dueTime, scheduler: scheduler)
@@ -106,7 +110,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         XCTAssertEqual(spy.viewMessages, [])
         XCTAssertEqual(spy.interactorMessage, [])
         XCTAssertEqual(spy.interactorCallCount, 0)
-        XCTAssertEqual(spy.loadRouterId, "")
+        XCTAssertEqual(spy.observeId, "")
     }
     
     func test_viewDidLoad_deliversErrorOnFailure() {
@@ -244,6 +248,15 @@ final class RestaurantListPresenterTests: XCTestCase {
         XCTAssertEqual(spy.interactorMessage.last, .request(query: ""))
     }
     
+    func test_didSelectRestaurant_deliversIdWhenTrigger() {
+        let (sut, spy, _) = makeSUT()
+        let id = UUID().uuidString
+        
+        sut.didSelectRestaurant(id: id)
+        
+        XCTAssertEqual(spy.observeId, id)
+    }
+    
     //MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,
@@ -308,13 +321,12 @@ final class RestaurantListPresenterTests: XCTestCase {
         }
         
         //MARK: - Router
-        var loadRouterId = ""
+        var observeId = ""
         static func createModule() -> UIViewController {  UIViewController() }
         
         func navigateToDetail(view: (any RestaurantListViewProtocol)?, id: String) {
-            loadRouterId = id
+            observeId = id
         }
-        
         
     }
 

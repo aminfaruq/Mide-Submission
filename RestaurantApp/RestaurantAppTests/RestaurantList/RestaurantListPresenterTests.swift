@@ -44,23 +44,7 @@ final class RestaurantListPresenter {
     }
     
     func viewDidLoad() {
-        view?.showLoading()
-        
-        interactor?.loadRestaurants()
-            .observe(on: MainScheduler.instance)
-            .subscribe(
-                onSuccess: { [weak self] results in
-                    guard let self = self else { return }
-                    view?.hideLoading()
-                    view?.showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
-                },
-                onFailure: { [weak self] error in
-                    guard let self = self else { return }
-                    view?.hideLoading()
-                    view?.showError(error.localizedDescription)
-                }
-            )
-            .disposed(by: disposeBag)
+        executeSearch()
     }
     
     func didSearch(_ query: String) {
@@ -69,6 +53,8 @@ final class RestaurantListPresenter {
     
     private func setupSearchPipeline() {
         searchSubject
+            .debounce(dueTime, scheduler: scheduler)
+            .distinctUntilChanged()
             .subscribe(
                 onNext: { [weak self] query in
                     guard let self = self else { return }
@@ -78,17 +64,17 @@ final class RestaurantListPresenter {
             .disposed(by: disposeBag)
     }
     
-    private func executeSearch(query: String) {
+    private func executeSearch(query: String = "") {
         view?.showLoading()
         
         interactor?.loadRestaurants(query: query)
             .observe(on: MainScheduler.instance)
             .subscribe(
-//                onSuccess: { [weak self] results in
-//                    guard let self = self else { return }
-//                    view?.hideLoading()
-//                    view?.showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
-//                },
+                onSuccess: { [weak self] results in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
+                },
                 onFailure: { [weak self] error in
                     guard let self = self else { return }
                     view?.hideLoading()
@@ -144,11 +130,12 @@ final class RestaurantListPresenterTests: XCTestCase {
     }
     
     func test_didSearch_deliversErrorOnFailure() {
-        let (sut, spy, _) = makeSUT()
+        let (sut, spy, scheduler) = makeSUT()
         let expectedError = anyError()
         spy.interactorStub = .error(expectedError)
         
         sut.didSearch("")
+        scheduler.advanceTo(300)
         
         XCTAssertEqual(spy.interactorCallCount, 1)
         XCTAssertEqual(spy.viewMessages, [
@@ -170,13 +157,66 @@ final class RestaurantListPresenterTests: XCTestCase {
         XCTAssertEqual(spy.interactorMessage.last, .request(query: query))
     }
     
+    func test_didSearch_deliversUsersOnSuccess() {
+        let (sut, spy, scheduler) = makeSUT()
+        let restaurants = [makeRestaurant(name: "melting")]
+        
+        spy.interactorStub = .just(restaurants)
+        
+        sut.didSearch("melting")
+        scheduler.advanceTo(300)
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showRestaurants(restaurants.map { RestaurantItemViewModel(from: $0) })
+        ])
+    }
+    
+    func test_didSearch_debouncesFastConsecutiveQueries() {
+        let (sut, spy, scheduler) = makeSUT()
+        
+        sut.didSearch("mel")
+        scheduler.advanceTo(100)
+        XCTAssertEqual(spy.interactorCallCount, 0)
+        
+        sut.didSearch("melti")
+        scheduler.advanceTo(200)
+        XCTAssertEqual(spy.interactorCallCount, 0)
+        
+        sut.didSearch("melting")
+        scheduler.advanceTo(299)
+        XCTAssertEqual(spy.interactorCallCount, 0)
+        
+        scheduler.advanceTo(500)
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.interactorMessage.count, 1)
+        XCTAssertEqual(spy.interactorMessage.last, .request(query: "melting"))
+    }
+    
+    func test_didSearch_doesNotDuplicateSameSearch() {
+        let (sut, spy, scheduler) = makeSUT()
+
+        sut.didSearch("melting")
+        scheduler.advanceTo(300)
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        
+        sut.didSearch("melting")
+        scheduler.advanceTo(600)
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        
+        XCTAssertEqual(spy.interactorMessage.count, 1)
+    }
+    
     //MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> (sut: RestaurantListPresenter, spy: ViewSpy, scheduler: TestScheduler) {
         let scheduler = TestScheduler(initialClock: 0)
-        let sut = RestaurantListPresenter()
+        let sut = RestaurantListPresenter(scheduler: scheduler, dueTime: .seconds(300))
         let spy = ViewSpy()
         
         sut.view = spy

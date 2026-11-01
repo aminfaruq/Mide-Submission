@@ -7,6 +7,7 @@
 
 import XCTest
 import RxSwift
+import RxTest
 import RestaurantCore
 import RestaurantApp
 
@@ -28,8 +29,19 @@ final class RestaurantListPresenter {
     var view: RestaurantListViewProtocol?
     var interactor: RestaurantListInteractorProtocol?
     var router: RestaurantListRouterProtocol?
+    
+    private var searchSubject = PublishSubject<String>()
         
     private let disposeBag = DisposeBag()
+    
+    private let scheduler: SchedulerType
+    private let dueTime: RxTimeInterval
+    
+    public init(scheduler: SchedulerType = MainScheduler.instance, dueTime: RxTimeInterval = .milliseconds(300)) {
+        self.scheduler = scheduler
+        self.dueTime = dueTime
+        setupSearchPipeline()
+    }
     
     func viewDidLoad() {
         view?.showLoading()
@@ -51,13 +63,48 @@ final class RestaurantListPresenter {
             .disposed(by: disposeBag)
     }
     
+    func didSearch(_ query: String) {
+        searchSubject.onNext(query)
+    }
+    
+    private func setupSearchPipeline() {
+        searchSubject
+            .subscribe(
+                onNext: { [weak self] query in
+                    guard let self = self else { return }
+                    executeSearch(query: query)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
+    private func executeSearch(query: String) {
+        view?.showLoading()
+        
+        interactor?.loadRestaurants(query: query)
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+//                onSuccess: { [weak self] results in
+//                    guard let self = self else { return }
+//                    view?.hideLoading()
+//                    view?.showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
+//                },
+                onFailure: { [weak self] error in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showError(error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
 }
 
 
 final class RestaurantListPresenterTests: XCTestCase {
 
     func test_init_doesNotMessagesUponCreation() {
-        let (_, spy) = makeSUT()
+        let (_, spy, _) = makeSUT()
         
         XCTAssertEqual(spy.viewMessages, [])
         XCTAssertEqual(spy.interactorMessage, [])
@@ -66,7 +113,7 @@ final class RestaurantListPresenterTests: XCTestCase {
     }
     
     func test_viewDidLoad_deliversErrorOnFailure() {
-        let (sut, spy) = makeSUT()
+        let (sut, spy, _) = makeSUT()
         let expectedError = anyError()
         spy.interactorStub = .error(expectedError)
         
@@ -81,7 +128,7 @@ final class RestaurantListPresenterTests: XCTestCase {
     }
     
     func test_viewDidLoad_deliversResultsOnSuccess() {
-        let (sut, spy) = makeSUT()
+        let (sut, spy, _) = makeSUT()
         let results = [makeRestaurant(name: "melting"), makeRestaurant(name: "pot")]
         spy.interactorStub = .just(results)
         
@@ -96,11 +143,39 @@ final class RestaurantListPresenterTests: XCTestCase {
         ])
     }
     
+    func test_didSearch_deliversErrorOnFailure() {
+        let (sut, spy, _) = makeSUT()
+        let expectedError = anyError()
+        spy.interactorStub = .error(expectedError)
+        
+        sut.didSearch("")
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showError(expectedError.localizedDescription)
+        ])
+    }
+    
+    func test_didSearch_requestSearchWithInitialPageAndShowsLoading() {
+        let (sut, spy, scheduler) = makeSUT()
+        let query = "Melting"
+        
+        sut.didSearch(query)
+        scheduler.advanceTo(300)
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.viewMessages, [.showLoading])
+        XCTAssertEqual(spy.interactorMessage.last, .request(query: query))
+    }
+    
     //MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
-    ) -> (sut: RestaurantListPresenter, spy: ViewSpy) {
+    ) -> (sut: RestaurantListPresenter, spy: ViewSpy, scheduler: TestScheduler) {
+        let scheduler = TestScheduler(initialClock: 0)
         let sut = RestaurantListPresenter()
         let spy = ViewSpy()
         
@@ -111,7 +186,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         trackForMemoryLeaks(spy, file: file, line: line)
         
-        return (sut, spy)
+        return (sut, spy, scheduler)
     }
     
     private class ViewSpy: RestaurantListViewProtocol, RestaurantListInteractorProtocol, RestaurantListRouterProtocol {

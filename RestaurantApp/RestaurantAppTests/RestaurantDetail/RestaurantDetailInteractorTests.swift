@@ -12,22 +12,107 @@ import RestaurantApp
 
 final class RestaurantDetailInteractor {
     
+    private let loader: RestaurantDetailLoader
+    private let service: FavoriteService
+    
     init(loader: RestaurantDetailLoader, service: FavoriteService) {
-        
+        self.loader = loader
+        self.service = service
+    }
+    
+    func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity> {
+        return loader.loadRestaurantDetail(id: id)
+    }
+    
+    func addReview(body: AddReviewBody) -> Completable {
+        return loader.addReview(review: body)
     }
 }
 
 final class RestaurantDetailInteractorTests: XCTestCase {
     
-    func test_init_doesNotRequestFromLoaderOrService() {}
+    private let disposeBag = DisposeBag()
     
-    func test_fetchRestaurantDetail_deliversErrorOnFailure() {}
+    func test_init_doesNotRequestFromLoaderOrService() {
+        let (_, spy) = makeSUT()
+        
+        XCTAssertEqual(spy.loadCallCount, 0)
+        XCTAssertEqual(spy.addReviewCallCount, 0)
+    }
     
-    func test_fetchRestaurantDetail_deliversResultOnSuccess() {}
+    func test_loadRestaurantDetail_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.loadStub = .error(expectedError)
+        
+        let exp = expectation(description: "wait from response")
+        sut.loadRestaurantDetail(id: anyId())
+            .subscribe(
+                onFailure: { error in
+                    let receivedError = error as NSError
+                    XCTAssertEqual(receivedError.domain, expectedError.domain)
+                    XCTAssertEqual(receivedError.code, expectedError.code)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
-    func test_addReview_deliversErrorOnFailure() {}
+    func test_loadRestaurantDetail_deliversResultOnSuccess() {
+        let (sut, spy) = makeSUT()
+        let result = makeDetailRestaurant(name: "melting pot")
+        spy.loadStub = .just(result)
+        
+        let exp = expectation(description: "wait from response")
+        sut.loadRestaurantDetail(id: anyId())
+            .subscribe(
+                onSuccess: { receivedResult in
+                    XCTAssertEqual(receivedResult, result)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
-    func test_addReview_deliversOnComplete() {}
+    func test_addReview_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.addReviewStub = .error(expectedError)
+        
+        let exp = expectation(description: "wait from response")
+        sut.addReview(body: makeReview())
+            .subscribe(
+                onError: { error in
+                    let receivedError = error as NSError
+                    XCTAssertEqual(receivedError.domain, expectedError.domain)
+                    XCTAssertEqual(receivedError.code, expectedError.code)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_addReview_deliversOnComplete() {
+        let (sut, spy) = makeSUT()
+        spy.addReviewStub = .empty()
+        
+        let exp = expectation(description: "wait from response")
+        sut.addReview(body: makeReview())
+            .subscribe(
+                onCompleted: {
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
     func test_isFavorite_deliversErrorOnFailure() {}
     
@@ -56,10 +141,10 @@ final class RestaurantDetailInteractorTests: XCTestCase {
         
         // MARK: - Loader
         private(set) var loadCallCount = 0
-        private var loadStub: Single<RestaurantDetailEntity> = .never()
+        var loadStub: Single<RestaurantDetailEntity> = .never()
         
         private(set) var addReviewCallCount = 0
-        private var addReviewStub: Completable = .never()
+        var addReviewStub: Completable = .never()
         
         func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity> {
             loadCallCount += 1

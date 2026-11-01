@@ -54,7 +54,7 @@ final class RestaurantDetailInteractorTests: XCTestCase {
     
     private class InteractorSpy: RestaurantDetailLoader, FavoriteService {
         
-        //MARK: - Loader
+        // MARK: - Loader
         private(set) var loadCallCount = 0
         private var loadStub: Single<RestaurantDetailEntity> = .never()
         
@@ -71,7 +71,7 @@ final class RestaurantDetailInteractorTests: XCTestCase {
             return addReviewStub
         }
         
-        //MARK: - Favorite
+        // MARK: - Favorite
         private(set) var saveCallCount = 0
         private(set) var removeCallCount = 0
         private(set) var isFavoriteCallCount = 0
@@ -80,7 +80,6 @@ final class RestaurantDetailInteractorTests: XCTestCase {
         var removeStub: Completable = .never()
         var isFavoriteStub: Single<Bool> = .never()
 
-        
         func save(_ restaurant: RestaurantEntity) -> Completable {
             saveCallCount += 1
             return saveStub

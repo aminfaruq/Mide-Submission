@@ -8,7 +8,6 @@
 import RxSwift
 import RestaurantCore
 
-
 public final class RestaurantListInteractor: RestaurantListInteractorProtocol {
     
     private let loader: RestaurantListLoader

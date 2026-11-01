@@ -20,7 +20,6 @@ final class AppRouter {
             selectedImage: UIImage(systemName: "house.fill")
         )
         
-       
         let favoriteVC = RestaurantListRouter.createModule(loader: Container.shared.localFavoriteRestaurantListLoader.resolve())
         let favoriteNav = UINavigationController(rootViewController: favoriteVC)
         favoriteNav.tabBarItem = UITabBarItem(

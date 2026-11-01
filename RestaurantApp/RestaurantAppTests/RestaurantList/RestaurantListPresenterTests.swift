@@ -42,7 +42,6 @@ final class RestaurantListPresenterTests: XCTestCase {
         let results = [makeRestaurant(name: "melting"), makeRestaurant(name: "pot")]
         spy.interactorStub = .just(results)
         
-        
         sut.viewDidLoad()
         
         XCTAssertEqual(spy.interactorCallCount, 1)
@@ -186,7 +185,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         XCTAssertNil(sut.view)
     }
     
-    //MARK: Helpers
+    // MARK: Helpers
     private func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
@@ -207,8 +206,7 @@ final class RestaurantListPresenterTests: XCTestCase {
     
     private class ViewSpy: RestaurantListViewProtocol, RestaurantListInteractorProtocol, RestaurantListRouterProtocol {
        
-      
-        //MARK: - View
+        // MARK: - View
         enum ViewMessage: Equatable {
             case showLoading
             case hideLoading
@@ -234,8 +232,7 @@ final class RestaurantListPresenterTests: XCTestCase {
             viewMessages.append(.showError(message))
         }
         
-        
-        //MARK: - Interactor
+        // MARK: - Interactor
         enum InteractorMessage: Equatable {
             case request(query: String)
         }
@@ -249,7 +246,7 @@ final class RestaurantListPresenterTests: XCTestCase {
             return interactorStub
         }
         
-        //MARK: - Router
+        // MARK: - Router
         var observeId = ""
         static func createModule(loader: RestaurantListLoader) -> UIViewController {  UIViewController() }
         

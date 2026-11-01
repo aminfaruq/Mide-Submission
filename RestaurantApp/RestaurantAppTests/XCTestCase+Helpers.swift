@@ -38,4 +38,3 @@ func makeRestaurant(
         rating: 4.5
     )
 }
-

@@ -11,7 +11,7 @@ import RestaurantCore
 
 extension Container {
     
-    //MARK: - Low Level Module
+    // MARK: - Low Level Module
     var baseImageURL: Factory<URL> {
         self { URL(string: "https://restaurant-api.dicoding.dev/images/medium")! }.singleton
     }
@@ -32,8 +32,7 @@ extension Container {
         self { URLSessionHTTPClient() }.singleton
     }
     
-    
-    //MARK: - High Level Module
+    // MARK: - High Level Module
     /// - Home Injection
     var remoteRestaurantListLoader: Factory<RestaurantListLoader> {
         self { RemoteRestaurantListLoader(url: self.baseURL(), client: self.client()) }.singleton

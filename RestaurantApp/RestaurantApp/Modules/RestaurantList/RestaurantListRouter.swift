@@ -9,7 +9,6 @@ import UIKit
 import RestaurantCore
 import FactoryKit
 
-
 public final class RestaurantListRouter: RestaurantListRouterProtocol {
     public static func createModule(loader: RestaurantListLoader) -> UIViewController {
         let view = RestaurantListViewController()

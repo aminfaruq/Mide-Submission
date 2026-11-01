@@ -46,4 +46,3 @@ public protocol RestaurantListRouterProtocol: AnyObject {
     
     func navigateToDetail(view: RestaurantListViewProtocol?, id: String)
 }
-

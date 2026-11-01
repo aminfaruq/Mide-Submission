@@ -31,6 +31,21 @@ final class RestaurantDetailInteractor {
     func isFavorite(id: String) -> Single<Bool> {
         return service.isFavorite(id: id)
     }
+    
+    func toggleFavorite(restaurant: RestaurantEntity) -> Single<Bool> {
+        return service.isFavorite(id: restaurant.id)
+            .flatMap { [weak self] isFavorite in
+                guard let self = self else { return .just(false) }
+                
+                if isFavorite {
+                    return self.service.remove(id: restaurant.id)
+                        .andThen(.just(false))
+                } else {
+                    return self.service.save(restaurant)
+                        .andThen(.just(true))
+                }
+            }
+    }
 }
 
 final class RestaurantDetailInteractorTests: XCTestCase {
@@ -155,9 +170,51 @@ final class RestaurantDetailInteractorTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_toggleFavorite_savesWhenNotFavorite() {}
+    func test_toggleFavorite_savesWhenNotFavorite() {
+        let (sut, spy) = makeSUT()
+        let restaurant = makeRestaurant(name: "melting")
+        spy.isFavoriteStub = .just(false)
+        spy.saveStub = .empty()
+        spy.removeStub = .empty()
+
+        let exp = expectation(description: "wait from response")
+        sut.toggleFavorite(restaurant: restaurant)
+            .subscribe(
+                onSuccess: { state in
+                    XCTAssertTrue(state)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(spy.saveCallCount, 1)
+        XCTAssertEqual(spy.removeCallCount, 0)
+    }
     
-    func test_toggleFavorite_removesWhenAllreadyFavorite() {}
+    func test_toggleFavorite_removesWhenAllreadyFavorite() {
+        let (sut, spy) = makeSUT()
+        let restaurant = makeRestaurant(name: "melting")
+        spy.isFavoriteStub = .just(true)
+        spy.saveStub = .empty()
+        spy.removeStub = .empty()
+
+        let exp = expectation(description: "wait from response")
+        sut.toggleFavorite(restaurant: restaurant)
+            .subscribe(
+                onSuccess: { state in
+                    XCTAssertFalse(state)
+                    exp.fulfill()
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(spy.saveCallCount, 0)
+        XCTAssertEqual(spy.removeCallCount, 1)
+    }
     
     // MARK: Helpers
     private func makeSUT(

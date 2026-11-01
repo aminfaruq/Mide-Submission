@@ -28,6 +28,28 @@ final class RestaurantListPresenter {
     var view: RestaurantListViewProtocol?
     var interactor: RestaurantListInteractorProtocol?
     var router: RestaurantListRouterProtocol?
+        
+    private let disposeBag = DisposeBag()
+    
+    func viewDidLoad() {
+        view?.showLoading()
+        
+        interactor?.loadRestaurants()
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] results in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
+                },
+                onFailure: { [weak self] error in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showError(error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
     
 }
 
@@ -39,7 +61,39 @@ final class RestaurantListPresenterTests: XCTestCase {
         
         XCTAssertEqual(spy.viewMessages, [])
         XCTAssertEqual(spy.interactorMessage, [])
+        XCTAssertEqual(spy.interactorCallCount, 0)
         XCTAssertEqual(spy.loadRouterId, "")
+    }
+    
+    func test_viewDidLoad_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.interactorStub = .error(expectedError)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showError(expectedError.localizedDescription)
+        ])
+    }
+    
+    func test_viewDidLoad_deliversResultsOnSuccess() {
+        let (sut, spy) = makeSUT()
+        let results = [makeRestaurant(name: "melting"), makeRestaurant(name: "pot")]
+        spy.interactorStub = .just(results)
+        
+        
+        sut.viewDidLoad()
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showRestaurants(results.map { RestaurantItemViewModel(from: $0) })
+        ])
     }
     
     //MARK: Helpers
@@ -100,6 +154,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         
         func loadRestaurants(query: String) -> Single<[RestaurantEntity]> {
             interactorMessage.append(.request(query: query))
+            interactorCallCount += 1
             return interactorStub
         }
         

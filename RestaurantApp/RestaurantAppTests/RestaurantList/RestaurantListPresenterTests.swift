@@ -44,7 +44,11 @@ final class RestaurantListPresenter {
     }
     
     func viewDidLoad() {
-        executeSearch()
+        loadInitialData()
+    }
+    
+    func didPullToRefresh() {
+        loadInitialData()
     }
     
     func didSearch(_ query: String) {
@@ -53,6 +57,10 @@ final class RestaurantListPresenter {
     
     func didSelectRestaurant(id: String) {
         router?.navigateToDetail(view: view, id: id)
+    }
+    
+    private func loadInitialData() {
+        executeSearch()
     }
     
     private func setupSearchPipeline() {
@@ -255,6 +263,14 @@ final class RestaurantListPresenterTests: XCTestCase {
         sut.didSelectRestaurant(id: id)
         
         XCTAssertEqual(spy.observeId, id)
+    }
+    
+    func test_pullToRefresh_deliversInitialDataWhenTrigger() {
+        let (sut, spy, _) = makeSUT()
+        
+        sut.didPullToRefresh()
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
     }
     
     func test_view_shouldHaveBeenDeallocated() {

@@ -10,44 +10,6 @@ import RxSwift
 import RestaurantCore
 import RestaurantApp
 
-final class RestaurantDetailInteractor {
-    
-    private let loader: RestaurantDetailLoader
-    private let service: FavoriteService
-    
-    init(loader: RestaurantDetailLoader, service: FavoriteService) {
-        self.loader = loader
-        self.service = service
-    }
-    
-    func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity> {
-        return loader.loadRestaurantDetail(id: id)
-    }
-    
-    func addReview(body: AddReviewBody) -> Completable {
-        return loader.addReview(review: body)
-    }
-    
-    func isFavorite(id: String) -> Single<Bool> {
-        return service.isFavorite(id: id)
-    }
-    
-    func toggleFavorite(restaurant: RestaurantEntity) -> Single<Bool> {
-        return service.isFavorite(id: restaurant.id)
-            .flatMap { [weak self] isFavorite in
-                guard let self = self else { return .just(false) }
-                
-                if isFavorite {
-                    return self.service.remove(id: restaurant.id)
-                        .andThen(.just(false))
-                } else {
-                    return self.service.save(restaurant)
-                        .andThen(.just(true))
-                }
-            }
-    }
-}
-
 final class RestaurantDetailInteractorTests: XCTestCase {
     
     private let disposeBag = DisposeBag()

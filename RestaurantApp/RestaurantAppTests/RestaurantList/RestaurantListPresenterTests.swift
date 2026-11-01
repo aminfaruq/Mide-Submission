@@ -54,11 +54,22 @@ final class RestaurantListPresenter {
     private func setupSearchPipeline() {
         searchSubject
             .debounce(dueTime, scheduler: scheduler)
-            .distinctUntilChanged()
+            .startWith("")
+            .scan((previous: "", current: "")) { state, newQuery in
+                let cleanNew = newQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+                return (previous: state.current, current: cleanNew)
+            }
+            .skip(1) // Optional
+            .filter { $0.previous != $0.current }
             .subscribe(
-                onNext: { [weak self] query in
+                onNext: { [weak self] state in
                     guard let self = self else { return }
-                    executeSearch(query: query)
+                    
+                    if state.current.isEmpty {
+                        self.executeSearch(query: "")
+                    } else {
+                        self.executeSearch(query: state.current)
+                    }
                 }
             )
             .disposed(by: disposeBag)
@@ -134,7 +145,7 @@ final class RestaurantListPresenterTests: XCTestCase {
         let expectedError = anyError()
         spy.interactorStub = .error(expectedError)
         
-        sut.didSearch("")
+        sut.didSearch("melting")
         scheduler.advanceTo(300)
         
         XCTAssertEqual(spy.interactorCallCount, 1)
@@ -208,6 +219,29 @@ final class RestaurantListPresenterTests: XCTestCase {
         XCTAssertEqual(spy.interactorCallCount, 1)
         
         XCTAssertEqual(spy.interactorMessage.count, 1)
+    }
+    
+    func test_didSearch_doesNotRequestOnWhiteSpace() {
+        let (sut, spy, scheduler) = makeSUT()
+
+        sut.didSearch(" ")
+        scheduler.advanceTo(600)
+        XCTAssertEqual(spy.interactorCallCount, 0)
+    }
+    
+    func test_didSearch_requestsInitialDataWhenUserClearsSearchQuery() {
+        let (sut, spy, scheduler) = makeSUT()
+        
+        sut.didSearch("melting")
+        scheduler.advanceTo(300)
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.interactorMessage.last, .request(query: "melting"))
+        
+        sut.didSearch("")
+        scheduler.advanceTo(600)
+        
+        XCTAssertEqual(spy.interactorCallCount, 2)
+        XCTAssertEqual(spy.interactorMessage.last, .request(query: ""))
     }
     
     //MARK: Helpers

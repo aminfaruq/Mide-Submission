@@ -17,6 +17,17 @@ class RestaurantListViewController: UIViewController {
         return view
     }()
     
+    private lazy var searchController: UISearchController = {
+        let search = UISearchController(searchResultsController: nil)
+        search.searchResultsUpdater = self
+        search.searchBar.delegate = self
+        search.searchBar.sizeToFit()
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Search restaurant..."
+        search.hidesNavigationBarDuringPresentation = false
+        return search
+    }()
+    
     private let refreshControl = UIRefreshControl()
     
     private var restaurants = [RestaurantItemViewModel]()
@@ -30,13 +41,30 @@ class RestaurantListViewController: UIViewController {
         setupLayout()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        presenter?.viewDidLoad()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
     private func setupLayout() {
+        view.backgroundColor = .systemBackground
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(
             UINib(nibName: RestaurantTableViewCell.identifier, bundle: nil),
             forCellReuseIdentifier: RestaurantTableViewCell.identifier)
+        
+        tableView.tableHeaderView = searchController.searchBar
+        definesPresentationContext = true
         tableView.refreshControl = refreshControl
+        refreshControl.backgroundColor = .clear
         refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
     }
     
@@ -54,7 +82,14 @@ class RestaurantListViewController: UIViewController {
             tableView.separatorStyle = .singleLine
         }
     }
-    
+}
+
+extension RestaurantListViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        let query = searchController.searchBar.text ?? ""
+        self.currentQuery = query
+        presenter?.didSearch(query)
+    }
 }
 
 extension RestaurantListViewController: UITableViewDelegate, UITableViewDataSource {

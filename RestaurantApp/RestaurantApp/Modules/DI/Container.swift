@@ -60,4 +60,13 @@ extension Container {
     var localFavoriteRestaurantListLoader: Factory<RestaurantListLoader> {
         self { LocalFavoriteRestaurantListLoader(store: self.favoriteStore()) }
     }
+    
+    /// - Detail
+    var restaurantDetailLoader: Factory<RestaurantDetailLoader> {
+        self { RemoteRestaurantDetailLoader(url: self.baseURL(), client: self.client()) }
+    }
+    
+    var favoriteService: Factory<FavoriteService> {
+        self { LocalFavoriteService(store: self.favoriteStore()) }
+    }
 }

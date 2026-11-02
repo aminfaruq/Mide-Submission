@@ -10,6 +10,16 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RestaurantDetailViewController" customModule="RestaurantApp" customModuleProvider="target">
             <connections>
+                <outlet property="activityIndicatorView" destination="86x-2I-MPz" id="2yg-Bw-aRO"/>
+                <outlet property="addReviewLabel" destination="U3p-eP-Cao" id="m7R-b6-JGt"/>
+                <outlet property="cityLabel" destination="WGv-0Q-axm" id="S9g-Bq-cdb"/>
+                <outlet property="contentView" destination="KPd-C9-PXL" id="QcI-Yn-jM7"/>
+                <outlet property="descriptionLabel" destination="biM-JM-w8Z" id="kJZ-at-3Rs"/>
+                <outlet property="horizontalStackView" destination="qbJ-5u-Axv" id="ByZ-P0-Dlg"/>
+                <outlet property="imageView" destination="39z-5j-LKP" id="hqF-AO-YuP"/>
+                <outlet property="restaurantNameLabel" destination="1gq-zb-R5P" id="1RV-yY-orG"/>
+                <outlet property="scrollView" destination="DUT-T7-toO" id="YmD-87-iRO"/>
+                <outlet property="verticalStackView" destination="Syq-HB-Stu" id="a0B-8h-m6k"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -189,7 +199,7 @@
                         <constraint firstItem="KPd-C9-PXL" firstAttribute="width" secondItem="DUT-T7-toO" secondAttribute="width" id="vW6-j8-Olb"/>
                     </constraints>
                 </scrollView>
-                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="86x-2I-MPz">
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="86x-2I-MPz">
                     <rect key="frame" x="186.66666666666666" y="416" width="20" height="20"/>
                 </activityIndicatorView>
             </subviews>

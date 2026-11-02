@@ -28,7 +28,15 @@ final class AppRouter {
             selectedImage: UIImage(systemName: "heart.fill")
         )
         
-        let tabBarController = MainTabBarController(viewControllers: [homeNav, favoriteNav])
+        let profileVC = ProfileViewController()
+        let profileNav = UINavigationController(rootViewController: profileVC)
+        profileNav.tabBarItem = UITabBarItem(
+            title: "Profile",
+            image: UIImage(systemName: "person"),
+            selectedImage: UIImage(systemName: "person.fill")
+        )
+        
+        let tabBarController = MainTabBarController(viewControllers: [homeNav, favoriteNav, profileNav])
         return tabBarController
     }
 }

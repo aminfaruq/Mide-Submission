@@ -195,7 +195,7 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         XCTAssertNil(sut.view)
     }
     
-    //MARK: - Helpers
+    // MARK: - Helpers
     private func makeSUT(
         id: String = anyId(),
         file: StaticString = #filePath,

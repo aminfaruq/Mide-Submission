@@ -38,7 +38,16 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     
     private func checkFavoriteStatus() {
         interactor?.isFavorite(id: id)
-            .subscribe()
+            .subscribe(
+                onSuccess: { [weak self] isFavorite in
+                    guard let self = self else { return }
+                    view?.setFavoriteStatus(isFavorite: isFavorite)
+                },
+                onFailure: { [weak self] _ in
+                    guard let self = self else { return }
+                    view?.setFavoriteStatus(isFavorite: false)
+                }
+            )
             .disposed(by: disposeBag)
     }
     
@@ -107,11 +116,44 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         ])
     }
     
-    func test_viewDidLoad_setsFavoriteStatusTrueWhenRestaurantIsFavorited() {}
+    func test_viewDidLoad_setsFavoriteStatusTrueWhenRestaurantIsFavorited() {
+        let id = anyId()
+        let (sut, spy) = makeSUT(id: id)
+        spy.isFavoriteStub = .just(true)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertTrue(spy.viewMessages.contains(.setFavoriteStatus(isFavorite: true)))
+        XCTAssertEqual(spy.interactorMessages, [
+            .requestRestaurant(id: id),
+            .isFavorite(id: id)
+        ])
+    }
 
-    func test_viewDidLoad_setsFavoriteStatusFalseWhenRestaurantIsNotFavorited() {}
+    func test_viewDidLoad_setsFavoriteStatusFalseWhenRestaurantIsNotFavorited() {
+        let id = anyId()
+        let (sut, spy) = makeSUT(id: id)
+        spy.isFavoriteStub = .just(false)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertTrue(spy.viewMessages.contains(.setFavoriteStatus(isFavorite: false)))
+        XCTAssertEqual(spy.interactorMessages, [
+            .requestRestaurant(id: id),
+            .isFavorite(id: id)
+        ])
+    }
 
-    func test_viewDidLoad_ignoresFavoriteStatusErrorOnFailure() {}
+    func test_viewDidLoad_ignoresFavoriteStatusErrorOnFailure() {
+        let id = anyId()
+        let expectedError = anyError()
+        let (sut, spy) = makeSUT(id: id)
+        spy.isFavoriteStub = .error(expectedError)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertTrue(spy.viewMessages.contains(.setFavoriteStatus(isFavorite: false)))
+    }
     
     func test_didTapFavoriteButton_requestsToggleFavoriteOnInteractor() {}
 

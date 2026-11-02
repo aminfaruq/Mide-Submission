@@ -17,6 +17,8 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     
     private let disposeBag = DisposeBag()
     
+    private var currentRestaurantEntity: RestaurantEntity?
+    
     private let id: String
     
     public init(id: String) {
@@ -34,10 +36,27 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     
     func didPullToRefresh() {}
     
-    func didTapFavoriteButton() {}
+    func didTapFavoriteButton() {
+        guard let currentResult = currentRestaurantEntity else { return }
+        
+        interactor?.toggleFavorite(restaurant: currentResult)
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] isFavorite in
+                    guard let self = self else { return }
+                    view?.setFavoriteStatus(isFavorite: isFavorite)
+                },
+                onFailure: {  [weak self] error in
+                    guard let self = self else { return }
+                    view?.showError(error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
     
     private func checkFavoriteStatus() {
         interactor?.isFavorite(id: id)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] isFavorite in
                     guard let self = self else { return }
@@ -54,10 +73,12 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     private func requestDetail() {
         view?.showLoading()
         interactor?.loadRestaurantDetail(id: id)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] result in
                     guard let self = self else { return }
                     view?.hideLoading()
+                    self.currentRestaurantEntity = result.toRestaurantEntity()
                     view?.showRestaurant(RestaurantDetailItemViewModel(from: result))
                 },
                 onFailure: { [weak self] error in
@@ -155,11 +176,43 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         XCTAssertTrue(spy.viewMessages.contains(.setFavoriteStatus(isFavorite: false)))
     }
     
-    func test_didTapFavoriteButton_requestsToggleFavoriteOnInteractor() {}
+    func test_didTapFavoriteButton_requestsToggleFavoriteOnInteractor() {
+        let (sut, spy) = makeSUT()
+        spy.loadRestaurantDetailStub = .just(makeDetailRestaurant(name: "melting"))
+        spy.toggleFavoriteStub = .just(false)
+        
+        sut.viewDidLoad()
+        sut.didTapFavoriteButton()
+        
+        XCTAssertEqual(spy.interactorCallCount, 3)
+    }
 
-    func test_didTapFavoriteButton_updatesFavoriteStatusOnSuccess() {}
+    func test_didTapFavoriteButton_updatesFavoriteStatusOnSuccess() {
+        let (sut, spy) = makeSUT()
+        let expectedResult = makeDetailRestaurant(name: "melting")
+        spy.loadRestaurantDetailStub = .just(expectedResult)
+        spy.toggleFavoriteStub = .just(true)
+        
+        sut.viewDidLoad()
+        sut.didTapFavoriteButton()
 
-    func test_didTapFavoriteButton_deliversErrorOnFailure() {}
+        XCTAssertTrue(spy.viewMessages.contains(.setFavoriteStatus(isFavorite: true)))
+        XCTAssertTrue(spy.interactorMessages.contains(.toggleFavorite(restaurant: expectedResult.toRestaurantEntity())))
+    }
+
+    func test_didTapFavoriteButton_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        let expectedResult = makeDetailRestaurant(name: "melting")
+        spy.loadRestaurantDetailStub = .just(expectedResult)
+        
+        spy.toggleFavoriteStub = .error(expectedError)
+
+        sut.viewDidLoad()
+        sut.didTapFavoriteButton()
+        
+        XCTAssertTrue(spy.viewMessages.contains(.showError(expectedError.localizedDescription)))
+    }
     
     func test_didAddReview_requestsAddReviewOnInteractor() {}
 

@@ -15,13 +15,18 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     
     var interactor: RestaurantDetailInteractorProtocol?
     
+    private let disposeBag = DisposeBag()
+    
     private let id: String
     
     public init(id: String) {
         self.id = id
     }
     
-    func viewDidLoad() {}
+    func viewDidLoad() {
+        requestDetail()
+        checkFavoriteStatus()
+    }
     
     func didAddReview(_ review: AddReviewBody) {}
     
@@ -31,20 +36,76 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
     
     func didTapFavoriteButton() {}
     
-    private func checkFavoriteStatus() {}
+    private func checkFavoriteStatus() {
+        interactor?.isFavorite(id: id)
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
     
-    private func requestDetail() {}
+    private func requestDetail() {
+        view?.showLoading()
+        interactor?.loadRestaurantDetail(id: id)
+            .subscribe(
+                onSuccess: { [weak self] result in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showRestaurant(RestaurantDetailItemViewModel(from: result))
+                },
+                onFailure: { [weak self] error in
+                    guard let self = self else { return }
+                    view?.hideLoading()
+                    view?.showError(error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
 }
 
 final class RestaurantDetailPresenterTests: XCTestCase {
     
-    func test_init_doesNotMessageViewOrInteractorUponCreation() {}
+    func test_init_doesNotMessageViewOrInteractorUponCreation() {
+        let (_, spy) = makeSUT()
+        
+        XCTAssertEqual(spy.interactorCallCount, 0)
+        XCTAssertEqual(spy.interactorMessages, [])
+        XCTAssertEqual(spy.viewMessages, [])
+    }
 
-    func test_viewDidLoad_requestsRestaurantDetailAndFavoriteStatus() {}
+    func test_viewDidLoad_requestsRestaurantDetailAndFavoriteStatus() {
+        let (sut, spy) = makeSUT()
+        
+        sut.viewDidLoad()
+        
+        XCTAssertEqual(spy.interactorCallCount, 2)
+    }
 
-    func test_viewDidLoad_deliversErrorOnDetailFailure() {}
+    func test_viewDidLoad_deliversErrorOnDetailFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.loadRestaurantDetailStub = .error(expectedError)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showError(expectedError.localizedDescription)
+        ])
+    }
 
-    func test_viewDidLoad_deliversRestaurantDetailOnDetailSuccess() {}
+    func test_viewDidLoad_deliversRestaurantDetailOnDetailSuccess() {
+        let (sut, spy) = makeSUT()
+        let expectedResult = makeDetailRestaurant(name: "melting")
+        spy.loadRestaurantDetailStub = .just(expectedResult)
+        
+        sut.viewDidLoad()
+        
+        XCTAssertEqual(spy.viewMessages, [
+            .showLoading,
+            .hideLoading,
+            .showRestaurant(RestaurantDetailItemViewModel(from: expectedResult))
+        ])
+    }
     
     func test_viewDidLoad_setsFavoriteStatusTrueWhenRestaurantIsFavorited() {}
 
@@ -158,7 +219,7 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         
         private(set) var interactorMessages = [InteractorMessage]()
         
-        var fetchRestaurantDetailStub: Single<RestaurantDetailEntity> = .never()
+        var loadRestaurantDetailStub: Single<RestaurantDetailEntity> = .never()
         var addReviewStub: Completable = .never()
         
         var isFavoriteStub: Single<Bool> = .never()
@@ -166,7 +227,7 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         
         func loadRestaurantDetail(id: String) -> Single<RestaurantDetailEntity> {
             interactorMessages.append(.requestRestaurant(id: id))
-            return fetchRestaurantDetailStub
+            return loadRestaurantDetailStub
         }
         
         func addReview(body: AddReviewBody) -> Completable {

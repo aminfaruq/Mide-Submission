@@ -9,7 +9,7 @@ import RxSwift
 import RestaurantCore
 import Foundation
 
-public final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
+public final class RestaurantDetailPresenter: RestaurantDetailPresenterProtocol {
     public weak var view: RestaurantDetailViewProtocol?
     
     public var interactor: RestaurantDetailInteractorProtocol?

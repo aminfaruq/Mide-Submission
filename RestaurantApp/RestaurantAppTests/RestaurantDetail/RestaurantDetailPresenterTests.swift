@@ -30,11 +30,29 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
         checkFavoriteStatus()
     }
     
-    func didAddReview(_ review: AddReviewBody) {}
+    func didAddReview(_ review: AddReviewBody) {
+        interactor?.addReview(body: review)
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onCompleted: {  [weak self] in
+                    guard let self = self else { return }
+                    view?.showPopup()
+                },
+                onError: { [weak self] error in
+                    guard let self = self else { return }
+                    view?.showError(error.localizedDescription)
+                }
+            )
+            .disposed(by: disposeBag)
+    }
     
-    func didDismissPopup() {}
+    func didDismissPopup() {
+        requestDetail()
+    }
     
-    func didPullToRefresh() {}
+    func didPullToRefresh() {
+        requestDetail()
+    }
     
     func didTapFavoriteButton() {
         guard let currentResult = currentRestaurantEntity else { return }
@@ -80,6 +98,8 @@ final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
                     view?.hideLoading()
                     self.currentRestaurantEntity = result.toRestaurantEntity()
                     view?.showRestaurant(RestaurantDetailItemViewModel(from: result))
+                    let menus = (result.menus.foods + result.menus.drinks).map(\.name)
+                    view?.showMenus(menus)
                 },
                 onFailure: { [weak self] error in
                     guard let self = self else { return }
@@ -128,12 +148,16 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         let expectedResult = makeDetailRestaurant(name: "melting")
         spy.loadRestaurantDetailStub = .just(expectedResult)
         
+        let restaurant = RestaurantDetailItemViewModel(from: expectedResult)
         sut.viewDidLoad()
+        
+        let menus = (restaurant.menus.foods + restaurant.menus.drinks).map(\.name)
         
         XCTAssertEqual(spy.viewMessages, [
             .showLoading,
             .hideLoading,
-            .showRestaurant(RestaurantDetailItemViewModel(from: expectedResult))
+            .showRestaurant(restaurant),
+            .showMenus(menus)
         ])
     }
     
@@ -214,15 +238,51 @@ final class RestaurantDetailPresenterTests: XCTestCase {
         XCTAssertTrue(spy.viewMessages.contains(.showError(expectedError.localizedDescription)))
     }
     
-    func test_didAddReview_requestsAddReviewOnInteractor() {}
+    func test_didAddReview_requestsAddReviewOnInteractor() {
+        let (sut, spy) = makeSUT()
+        let review = makeReview()
+        sut.didAddReview(review)
+        
+        XCTAssertEqual(spy.interactorCallCount, 1)
+        XCTAssertEqual(spy.interactorMessages, [.requestAddReview(body: review)])
+    }
 
-    func test_didAddReview_deliversErrorOnFailure() {}
+    func test_didAddReview_deliversErrorOnFailure() {
+        let (sut, spy) = makeSUT()
+        let expectedError = anyError()
+        spy.addReviewStub = .error(expectedError)
+        
+        sut.didAddReview(makeReview())
+        
+        XCTAssertEqual(spy.viewMessages, [.showError(expectedError.localizedDescription)])
+    }
 
-    func test_didAddReview_reloadsDetailOnSuccess() {}
+    func test_didAddReview_showPopupWhenSuccess() {
+        let (sut, spy) = makeSUT()
+        spy.addReviewStub = .empty()
+        
+        sut.didAddReview(makeReview())
+        
+        XCTAssertEqual(spy.viewMessages, [.showPopup])
+    }
     
-    func test_didPullToRefresh_reloadsRestaurantDetailAndFavoriteStatus() {}
+    func test_didPullToRefresh_reloadsRestaurantDetail() {
+        let id = anyId()
+        let (sut, spy) = makeSUT(id: id)
+        
+        sut.didPullToRefresh()
+        
+        XCTAssertEqual(spy.interactorMessages, [.requestRestaurant(id: id)])
+    }
     
-    func test_didDismissPopup_handlesPopupDismissal() {}
+    func test_didDismissPopup_handlesPopupDismissal() {
+        let id = anyId()
+        let (sut, spy) = makeSUT(id: id)
+        
+        sut.didDismissPopup()
+        
+        XCTAssertTrue(spy.interactorMessages.contains(.requestRestaurant(id: id)))
+    }
     
     func test_view_shouldHaveBeenDeallocated() {
         let (sut, _) = makeSUT()

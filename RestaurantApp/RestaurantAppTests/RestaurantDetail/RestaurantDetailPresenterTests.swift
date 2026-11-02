@@ -11,21 +11,28 @@ import RestaurantApp
 import RestaurantCore
 
 final class RestaurantDetailPresenter : RestaurantDetailPresenterProtocol {
-    var view: RestaurantDetailViewProtocol?
+    weak var view: RestaurantDetailViewProtocol?
+    
     var interactor: RestaurantDetailInteractorProtocol?
     
     private let id: String
+    
     public init(id: String) {
         self.id = id
     }
     
     func viewDidLoad() {}
+    
     func didAddReview(_ review: AddReviewBody) {}
+    
     func didDismissPopup() {}
+    
     func didPullToRefresh() {}
+    
     func didTapFavoriteButton() {}
     
     private func checkFavoriteStatus() {}
+    
     private func requestDetail() {}
 }
 
@@ -61,7 +68,17 @@ final class RestaurantDetailPresenterTests: XCTestCase {
     
     func test_didDismissPopup_handlesPopupDismissal() {}
     
-    func test_view_shouldHaveBeenDeallocatedWhenViewIsReleased() {}
+    func test_view_shouldHaveBeenDeallocated() {
+        let (sut, _) = makeSUT()
+        
+        do {
+            let tempView = ViewSpy()
+            sut.view = tempView
+            XCTAssertNotNil(sut.view)
+        }
+        
+        XCTAssertNil(sut.view)
+    }
     
     //MARK: - Helpers
     private func makeSUT(
